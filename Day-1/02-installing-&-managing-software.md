@@ -20,7 +20,47 @@ In this lesson, we will introduce the major ways bioinformatics packages can be 
 
 ---
 
-## What does it mean for software to be installed?
+
+## Software pre-installed on the system
+As seen above, Linux systems will have many core utilities for navigating the file system, creating, editing and removing files, downloading and uploading files, compiling code, submitting jobs to a cluster, and many more.  These utilities are commonly found in `/usr/bin`.  
+
+### What is software?
+
+### The $PATH environment variable points to available software on the cluster
+
+Another very important environment variable is `$PATH`, which stores a list of directories that tells bash where specific programs that we want to be available to us are stored. Programs are executable files, and bash needs to know where these files are in order to run the commands as we call them.
+
+The list is stored as strings separated by colons, so that many directories can be defined. Use `echo` to print `$PATH` variable.
+```shell
+echo $PATH
+
+# Make the output more readable using 'tr' to swap the colons for newlines
+echo $PATH| tr ":" "\n"
+```
+
+As you can see, many of the directory names end in `bin` which standards for *binary*, which is a common directory name to store executables (programs).
+
+Importantly, you can add directories to your `$PATH` as you either create or install programs, making them available to you as executables. Since the `$PATH` variable is set each time your `.bash_profile` is run at the start of a new session, the executables you add to `$PATH` will be available for you in a new bash session, without having to add them to your `$PATH` again.
+
+We will create an executable file and add it to our $PATH in another lesson, however below is a toy example of how you would add a new executables directory to your `$PATH` variable:
+```
+export PATH="~/location/of/new/executables:$PATH"
+```
+
+A command for finding where a program lives in the $PATH is the `which` command. This can be useful for debugging environment issues as they arise when trying to use or install new software. Check where the executable for the `echo` command is located.  The `which` command :
+```r
+which echo
+```
+
+Many commands like `ls` will also accept wildcards, which are special character instances that allow you to do things like operate on multiple files at one time, or search for specific patterns (either in files or file names). A wildcard character is the asterisk, which can be used to represent any number of characters.
+```bash
+# list all files in my current directory with the file extension .txt
+ls *.txt
+```
+
+
+
+### What does it mean for software to be installed?
 To run software on a Linux command line, the software must both exist, and be accessible by a relative or absolute path.  The commands below demonstrate how the programs 'gzip' and 'gunzip' are installed on our system:
 ```shell
 #Check which directory we're in
@@ -70,15 +110,12 @@ cat test.txt
 
 ---
 
-## Software pre-installed on the system
-As seen above, Linux systems will have many core utilities for navigating the file system, creating, editing and removing files, downloading and uploading files, compiling code, submitting jobs to a cluster, and many more.  These utilities are commonly found in `/usr/bin`.  
 
----
-
-
----
 
 ## Pre-compiled binary executable
+
+### What does compiled mean?
+
 Some developers will pre-compile releases of their software for several operating systems and make them available for download. If a pre-compiled executable is available for the Linux system we are using (for Discovery, this is CentOS 7), this can be a painless way to install software. It only requires downloading the executable to a directory and running it.  For example, the following will download a binary, precompiled for Linux, of the bowtie2 aligner.
 ```shell
 wget https://github.com/BenLangmead/bowtie2/releases/download/v2.4.2/bowtie2-2.4.2-linux-x86_64.zip
@@ -160,9 +197,25 @@ Conda is an excellent way to install and manage software for bioinformatics, sin
 
 > Research computing provides an introduction to using Conda on the Dartmouth computing infrastructure (link [here](https://services.dartmouth.edu/TDClient/1806/Portal/KB/ArticleDet?ID=72888)), which describes how to best make use of Conda on Discovery/Polaris/Andes.
 
+
+
+We will do this now by loading a new environment with the tool `conda`. We have pre-built this `conda` environment for you such that all of the tools you will need have been loaded into this environment, you should have created this environment with the commands included in the welcome and setup email. Tomorrow we will talk more about how to create your own custom `conda` environment.
+
+```bash
+# Load conda environment
+conda activate bioinfo
+# Check your PATH compared to before activating, note the additional binaries folder
+echo $PATH| tr ":" "\n"
+```
+This should change the word at the beginning of your prompt from `(base)` to the name of the conda environment that you just loaded `(bioinfo)`.
+
+
 ---
 
 ## Virtual machine images (eg. Docker, Singularity)
+
+### How do VM images differ from conda environments
+
 Virtual machine images allow software to be distributed along with an entire linux environment. This ensures that anyone running the software will be able to, regardless of software installed or environment variables, and make software management seamless.
 
 However, containers can raise security issues when working with high performance computing clusters such as discovery. Docker cannot currently be used on discovery, and singularity images that can be currently used are somewhat limited.
@@ -173,6 +226,9 @@ However, containers can raise security issues when working with high performance
 
 
 ## Language-specific package managers
+
+#### Reduce this section and add a pointer to the R recap lesson
+
 Package managers for specific programming languages aim to make the installation of packages or libraries more simple, and from a central location. This allows software to be installed using a single command, rather than having to search the internet for each piece of software and download/install it separately.
 
 For R, packages are available from two major sources:  
