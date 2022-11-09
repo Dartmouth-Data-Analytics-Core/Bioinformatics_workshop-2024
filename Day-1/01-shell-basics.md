@@ -71,7 +71,7 @@ ls
 A path is the address that indicates where your data are stored. If I told you that my data was stored in a directory (folder) called `data` , you would understand that you should search for a folder on my computer called `data`. In some cases there may be multiple directories called data and we would need to distinguish which directory contains the data of interest. In the image below there is a directory (folder) called `data_analysis`, which contains two directories called `project-1` and `project-2`. Each project directory contains another directory called `data`.
 
 <p align="center">
-  <img src="../figures/directoryStructure.png" height="80%" width="80%"/>
+  <img src="../figures/directoryStructure.png" height="40%" width="40%"/>
 </p>
 
 The path `data_analysis/project-1/data/` refers specifically to the `data` directory in `project-1`. Each directory and sub-directory in the path are separated by the forward slash `/` to indicate the path through the directories to the directory of interest. For most bioinformatic software you will need to submit the location of the files you would like to analyze using a path. 
