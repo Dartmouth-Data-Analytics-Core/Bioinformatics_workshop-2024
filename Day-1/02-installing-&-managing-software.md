@@ -24,7 +24,7 @@ In this lesson, we will introduce the major ways bioinformatics packages can be 
 Before we discuss how to access software, it is important to understand the basics of compute resources. This may seem pedantic to some of you, but we want to make sure everyone is starting with the same background. The hardware of a system is the available memory and processing power of a compute resource. Software are a set of instructions, writing in a coding language, for manipulating data using the available hardware. Software can further be categorized into system software, which interfaces directly with the hardware of the compute system, an example of this would be your operating system and application software, which interfaces with the system software to leverage the hardware compute resources. All of the commands and software we will discuss in this workshop fall into the application category.
 
 <p align="center">
-  <img src="../figures/softwareImage.png" height="50%" width="50%"/>
+  <img src="../figures/softwareImage.png" height="35%" width="35%"/>
 </p>
 
 As seen in the previous lesson, Linux systems will have many core utilities (software) for navigating the file system, creating, editing and removing files, and many more. In addition to these core utilities, there are many environmental variables already defined for you, one of these variables is `$PATH` which is defined by a list of absolute paths where software pre-installed on the system exists. Let's take a look at the variable `$PATH`
@@ -150,10 +150,11 @@ With package managers becoming more widespread, you should only rarely need to i
 [Conda](https://docs.conda.io/projects/conda/en/latest/) is an open source package and environment manager that runs on Windows, MacOS and Linux. Conda allows you to install and update software packages as well as organize them efficiently into *environments* that you can switch between to manage software collections and versions. 
 
 Notice that in this section we have moved from discussing software to software packages. Often you will find that a program is written to leverage many other pieces of software, called dependencies. So one piece of software may combine data manipulation techniques from 5 other pieces of software to generate a unique output, these are the dependencies of the first piece of software. It is often the case that each of the 5 dependencies have their own dependencies, so that even though you're interfacing with the command structure for a single piece of software you're actually leveraging instructions for data manipulation from many pieces of software. To add even more complexity there are often multiple versions of software and dependencies each need to be a specfic version to function as part of the software you're interested in using. This is where software package managers like Conda really shine. 
-~~~~~~~~~~~~~~~~~~~~
+
+
 <img src="../figures/conda.png" height="60" width="250"/>
 
-Conda allows you to create a virtually unlimited number of software environments that can be used for specific analyses, and therefore presents efficient and reproducible way to manage your software across multiple projects.
+Conda allows you to create a virtually unlimited number of software environments that can be used for specific analyses, and therefore presents efficient and reproducible way to manage your software across multiple projects. 
 
 <img src="../figures/conda-envs.png" height="350" width="410"/>
 
