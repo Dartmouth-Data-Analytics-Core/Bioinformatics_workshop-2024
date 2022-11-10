@@ -10,38 +10,22 @@
 
 Make a new directory to work in:
 ```bash
-#log onto a compute node
-srun --nodes=1 --ntasks-per-node=1 --mem-per-cpu=4GB --cpus-per-task=1 --time=08:00:00 --partition=standard  --pty /bin/bash
-
-# go to our home dir for the workshop
-cd /dartfs-hpc/scratch/YOUR_INITIALS_HERE/fundamentals_of_bioinformatics/
+# go to your home directory for the workshop
+cd $FOB
 
 # IF YOU DIDN'T HAVE TIME TO FINISH TRIMMING COPY THOSE FILES NOW
-mkdir trim
-cp /dartfs-hpc/scratch/fund_of_bioinfo/trim/* /dartfs-hpc/scratch/YOUR_INITIALS_HERE/fundamentals_of_bioinformatics/trim/
+mkdir -p $FOB/trim
+cp $SOURCE/trim/* $FOB/trim/
 
 # make the directory and cd into it
-mkdir aligned
-cd aligned
+mkdir -p $FOB/aligned
+cd $FOB/aligned
 ```
 
-If you get lost, or do not have enough time to finish the commands before we move to the next session you can copy the files needed for the next step with the following command from the scratch directory you have created for yourself. Again, you will need to update the target directory to your own directory on scratch.
-
-```bash
-# go to your scratch directory (e.g. /dartfs-hpc/scratch/YOUR_INTIALS_HERE/fundamentals_of_bioinformatics/)
-#make a directory to store aligned files
-mkdir aligned
-
-# copy files
-# REMEMBER TO CHANGE THE DESTINATION DIRECTORY TO YOUR OWN INITIALS
-cp /dartfs-hpc/scratch/fund_of_bioinfo/aligned/* /dartfs-hpc/scratch/YOUR_INITIALS_HERE/fundamentals_of_bioinformatics/aligned/
-```
-
+## Principles of read mapping for RNA-seq
 ---
 
-### Principles of read mapping for RNA-seq
-
-For NGS experiments, the goal of read mapping is to find an alignment that describes the **most likely location in the reference genome where that read originated from**. This is generally determined by reducing the information in the reference and query (read to be mapped) into smaller strings and looking for the position in the reference with the highest number of matching smaller strings. This process is also used in *de novo* genome assembly, local alignments (BLAST or BLAT), and global alignments.
+For NGS experiments, the goal of read mapping is to find an alignment that describes the **most likely location in the reference genome where that read originated from**. This is generally determined by reducing the information in the reference and query (read to be mapped) into smaller strings and looking for the position in the reference with the highest number of matching smaller strings. This same process is also used in *de novo* genome assembly, local alignments (BLAST or BLAT), and global alignments.
 
 Although we won't go into the theory here, aligning reads to reference genomes involves **mapping** to identify the most likely position of the read in the reference genome, followed by the **alignment**, which describes the base-by-base relationship between the read and the reference.
 
@@ -56,9 +40,8 @@ Challenges of aligning millions of short reads to a reference genome involve:
 - For Eukaryotic genomes the presence of introns in reference genomes, meaning aligners must be able to consider splice-junctions
 - For Prokaryotic genomes the presence of mobile genetic elements or recombination hotspots in reference genomes
 
-It is important when selecting an aligner to select one appropriate for your experiment. Different aligners exist and generally have different properties and applications. For example, some aligners are **splice-aware** while others are not. Splice-aware aligners can generate alignments that span intronic regions and therefore account for splicing, e.g. `STAR` and `HISAT2`. If your dataset is prokaryotic (non-splicosomal) you would not want to use a splice-aware aligner, and instead using an aligner that is not designed to map across intronic regions such as `bwa-mem` or `bowtie2`.
+It is important when selecting an aligner to select one appropriate for your experiment. Different aligners generally have different properties and applications. For example, some aligners are **splice-aware** while others are not. Splice-aware aligners can generate alignments that span intronic regions and therefore account for splicing, e.g. `STAR` and `HISAT2`. If your dataset is prokaryotic (non-splicosomal) you would not want to use a splice-aware aligner, and instead using an aligner that is not designed to map across intronic regions such as `bwa-mem` or `bowtie2`.
 
----
 
 ### What is a reference genome?
 
@@ -66,7 +49,7 @@ Reference genomes are more of a concept, not a reality. A reference genome (or r
 
 Reference genomes have proven a powerful tool that allows us to appropriately address many scientific questions, as well as providing the scientific community a standardized coordinate system for that is used for specific genome builds. For example, the permanent start coordinate for the human gene *CDK9* in reference genome GRCh38/p.13 is chr9:127,786,034.
 
-New genome builds are produced when significant improvements have been made to the sequence, warranting release of an updated sequence with a new coordinate system. For example, genome coordinates are different between GRCh38 and GRCh37. Individual genome builds are sometime updated through *patches*, for example, when a previously ambiguous sequence becomes available.
+New genome builds are produced when significant improvements have been made to the sequence, warranting release of an updated sequence with a new coordinate system. For example, genome coordinates are different between GRCh38 and GRCh37. Individual genome builds are sometimes updated through *patches*, for example, when a previously ambiguous sequence becomes available.
 
 <p align="center">
 <img src="../figures/hg38.png" title="xxxx" alt="context"
@@ -80,20 +63,20 @@ Reference genomes are generally distributed in FASTA file format, with separate 
 
 ```bash
 # print head of FASTA file
-head /dartfs-hpc/scratch/fund_of_bioinfo/references/Homo_sapiens.GRCh38.dna.primary_assembly.fa
+head $SOURCE/refs/Homo_sapiens.GRCh38.dna.primary_assembly.fa
 
 # print tail of FASTA file
-tail /dartfs-hpc/scratch/fund_of_bioinfo/references/Homo_sapiens.GRCh38.dna.primary_assembly.fa
+tail $SOURCE/refs/Homo_sapiens.GRCh38.dna.primary_assembly.fa
 
 # print only header lines for each FASTA record
-grep ">" /dartfs-hpc/scratch/fund_of_bioinfo/references/Homo_sapiens.GRCh38.dna.primary_assembly.fa
+grep ">" $SOURCE/refs/Homo_sapiens.GRCh38.dna.primary_assembly.fa
 ```
 
 #### Limitations of reference genomes
 
-However, there are a number imitations to using reference genomes in the ways described above:  
-- do not appropriately account for genetic variation, as they are composed of one linear sequence
-- short-read sequencing technology has been used to generate some references, which can lead to inaccuracies or gaps in the assembly of regions that are challenging to sequence with these technologies (e.g. repetitive regions)
+There are a number imitations to using reference genomes:  
+- do not account for genetic variation, as they are composed of one linear sequence
+- short-read sequencing technology has been used to generate some references, which can lead to inaccuracies or gaps in the assembly of regions that are challenging to assemble (e.g. repetitive regions)
 - some assemblies, such as the human reference, do not contain so-called non-reference unique insertions (NUIs), which are unique sequences found in multiple individuals but not in the reference
 
 These limitations have resulted in productive discussion and research around the concepts and utilities of reference genomes, prompting some alternative reference styles to be suggested. See [Wong *et al*, Nat. Comm. 2020](https://www.nature.com/articles/s41467-020-19311-w) and Ballouz *et al*, Genom. Biol. 2019](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-019-1774-4) for examples.
@@ -102,23 +85,21 @@ In recent years, long read sequencing technologies have allowed us to improve th
 
 #### Sources of reference genomes & genome annotations
 
-Reference genomes are hosted on a number of different websites and often accompanied by genome annotations, which describe the gene/transcript models for that genome. These annotations are the product specific pipelines utilized by large-scale genome annotation projects.
-
-For example, [*RefSeq (NCBI)*](https://ftp.ncbi.nlm.nih.gov/genomes/refseq/), [*UCSC*](https://hgdownload.soe.ucsc.edu/downloads.html), and [*Ensembl*](http://ftp.ensembl.org/pub/) all generate genome annotations based on specific annotation pipelines, and currently host annotations for a wide range of organisms.
+Reference genomes are hosted on a number of different websites and often accompanied by genome annotations, which describe the gene/transcript coordinates for that genome. These annotations are the product specific pipelines utilized by large-scale genome annotation projects. [*RefSeq (NCBI)*](https://ftp.ncbi.nlm.nih.gov/genomes/refseq/), [*UCSC*](https://hgdownload.soe.ucsc.edu/downloads.html), and [*Ensembl*](http://ftp.ensembl.org/pub/) all generate genome annotations based on specific annotation pipelines, and currently host annotations for a wide range of organisms.
 
 Genome annotations are most commonly distributed using the GTF (Gene transfer format) file format. We will explore this format in more detail later in the lesson, however we can briefly look at an example annotation file for hg38:
 ```bash
 # print head of GTF file
-head /dartfs-hpc/scratch/fund_of_bioinfo/references/Homo_sapiens.GRCh38.97.gtf
+head $SOURCE/refs/Homo_sapiens.GRCh38.97.gtf
 
 # print tail of GTF file
-tail /dartfs-hpc/scratch/fund_of_bioinfo/references/Homo_sapiens.GRCh38.97.gtf
+tail $SOURCE/refs/Homo_sapiens.GRCh38.97.gtf
 
 # print all lines containing CDK9
-grep "CDK9" /dartfs-hpc/scratch/fund_of_bioinfo/references/Homo_sapiens.GRCh38.97.gtf
+grep "CDK9" $SOURCE/refs/Homo_sapiens.GRCh38.97.gtf
 ```
 
-The table below from the [UCSC website](https://genome.ucsc.edu/FAQ/FAQgenes.html#gene) highlights how different genome annotation from different annotation pipelines can be with respect to availability of transcript models for human genome build GRCh38/hg38 (as of March 2019).  
+The table below from the [UCSC website](https://genome.ucsc.edu/FAQ/FAQgenes.html#gene) highlights how different genome annotations produced by different annotation pipelines can be with respect to availability of transcript models for human genome build GRCh38/hg38 (as of March 2019).  
 
 <p align="left">
 <img src="../figures/genome-anno.png" title="xxxx" alt="context"
@@ -126,9 +107,9 @@ The table below from the [UCSC website](https://genome.ucsc.edu/FAQ/FAQgenes.htm
 </p>
 
 
-Several genome annotation project websites will also host current and archived versions of the reference genome sequence. For common genomes, the hosted reference genomes (and their sequences) are identical and come from the same source/submitter. For example, the human genome reference sequences hosted on NCBI, UCSC, and Ensembl all use the sequence provided by the Genome Reference Consortium (GRC)](https://www.ncbi.nlm.nih.gov/grc) which provides genome assemblies for human, mouse, zebrafish and chicken.
+Several genome annotation project websites will also host current and archived versions of the reference genome sequence. For common genomes, the hosted reference genomes (and their sequences) are identical and come from the same source/submitter. For example, the human genome reference sequences hosted on NCBI, UCSC, and Ensembl all use the sequence provided by the Genome Reference Consortium [(GRC)](https://www.ncbi.nlm.nih.gov/grc) which provides genome assemblies for human, mouse, zebrafish and chicken.
 
-Most reference genomes and genome annotations can be downloaded through ftp sites that allow you to download the FASTA files for that genomes using the UNIX command line. While there are several ways you can download files from the command line, one example is through using the `rsync` command.
+Most reference genomes and genome annotations can be downloaded through ftp sites that allow you to download the FASTA and GTF files using the command line. While there are several ways you can download files from the command line, we used `wget` in the software lesson, here is an example using the `rsync` command. Similar to `cp` the syntax of `rsync` is `rsync SOURCE DESTINATION`.
 
 *Do not run this command - this is only an example*
 ```bash
@@ -137,11 +118,12 @@ Most reference genomes and genome annotations can be downloaded through ftp site
 rsync -a -P rsync://hgdownload.soe.ucsc.edu/goldenPath/hg38/hg38Patch11/ ./
 ```
 
-The above is a simple example. It is generally best to follow instructions on downloading references from the website/center hosting them.
+This is one example, but generally you should follow instructions on downloading references from the website/center hosting them on the ftp site.
 
+
+
+## General concepts for read alignment
 ---
-
-### General concepts for read alignment
 
 **Read clipping:**  
 Aligners are capable of 'clipping' reads from sequence ends if they do not improve the quality of an alignment that exists for the rest of the sequence.  
@@ -150,7 +132,7 @@ There are two type of clipping:
 - *Soft-clipping*: bases at 5' and 3' ends of the read will be kept in the read sequence in the BAM file, but are NOT part of the alignment
 - *Hard-clipping*: bases at 5' and 3' ends of the read will be removed from the BAM file altogether and are NOT part of the alignment
 
-Such clipping is commonly used by aligners to get rid of sequence contamination, e.g. adapter sequences or polyA tails from mRNAs, so that it does not affect the alignment. This is why you do not necessarily need to be very aggressive in read trimming and pre-processing steps. Clipping can be very advantageous, but also can potentially cause some issues, read more [here](https://sequencing.qcfail.com/articles/soft-clipping-of-reads-may-add-potentially-unwanted-alignments-to-repetitive-regions/).
+Such clipping is commonly used by aligners to get rid of sequence contamination, e.g. adapter sequences or polyA tails from mRNAs, so that it does not affect the alignment. This is why you do not necessarily need to be very aggressive in read trimming during the pre-processing steps. Clipping can be very advantageous, but also can potentially cause some issues, read more [here](https://sequencing.qcfail.com/articles/soft-clipping-of-reads-may-add-potentially-unwanted-alignments-to-repetitive-regions/).
 
 **Splicing:**  
 As discussed above, numerous aligners exist, consisting of both ***splice-aware*** and ***splice-unaware*** aligners. Splice-aware aligners, such as `STAR` and `HISAT2` will produce alignments spanning splice junctions, which is obviously an important characteristic of RNA-seq data that the aligner needs to be able to account for. Furthermore, if you provide coordinates of splice-junctions to aligners like `STAR`, it can improve the mapping over spliced regions and improve detection of novel splice-functions.
@@ -170,11 +152,11 @@ Optional:
 
 Read alignments for NGS data are stored in three major file formats: *SAM (.sam)*, *BAM (.bam)*, and *CRAM (.cram)*.
 
-- **SAM (Sequence Alignment/Map)** format - tab-delimited text format, so is human readable file (should you dare to look inside)
-- **BAM** files are compressed, binary version of SAM files and are NOT human readable, but are much faster to parse and do complex operations with.
+- **SAM (Sequence Alignment/Map)** files are tab-delimited text formatted files that are human readable (should you dare to look inside).
+- **BAM** files are a compressed, binary version of SAM files and are NOT human readable, but are much faster to parse and do complex operations with.
 - **CRAM** files are compressed versions of the BAM format, and are not human readable, they are generally only used for storage purposes.
 
-You can read all about the SAM/BAM/CRAM file format specification in the documentation [here](https://samtools.github.io/hts-specs/SAMv1.pdf). While you may never need to actually look inside of a SAM/BAM file, it is important to have an understanding of what information they contain.
+You can read all about the SAM/BAM/CRAM file format specification in the documentation [here](https://samtools.github.io/hts-specs/SAMv1.pdf). As with FASTQ files, you may never need to actually look inside of a SAM/BAM file, but it is important to have an understanding of what information they contain.
 
 Alignment files are composed of two basic sections:
 - the header
@@ -192,12 +174,12 @@ The alignment section contains a number of 'slots' for each read alignment that 
 SAM/BAM/CRAM files can be viewed, queried, and manipulated using the [Samtools software suite](http://www.htslib.org/), which we will explore the usage of in more detail later in this lesson.
 
 
-#### Notes on select SAM fields:
+### Notes on select SAM fields:
 
 **FLAG:**  
 Encodes important information about the read, for example, is it a *primary*, *secondary*, or *supplementary* alignment. Since a single read will likely have a number of properties that we want to *'flag'*, SAM files use a special way of encoding the FLAG field to pack as much information as possible into a single number. While we won't go into detail on this here, SAM/BAM file use a bit-wise system to combine information across flags into a single integer.
 
-I encourage you to go read more about FLAGs and how they are specified in the SAM/BAM documentation. The Broad institute also provides an [excellent tool](https://broadinstitute.github.io/picard/explain-flags.html) for decomposing SAM flags into the properties of the read that make up a specific `FLAG` value.
+I encourage you to go read more about FLAGs and how they are specified in the SAM/BAM documentation. The Broad institute also provides an [excellent tool](https://broadinstitute.github.io/picard/explain-flags.html) for decomposing SAM flags into the properties of the read that make up a specific `FLAG` value. 
 
 This command will provide basic information on FLAGs from samtools.
 ```bash
@@ -222,11 +204,12 @@ Letter key for CIGAR strings:
 So for example, alignment in row 3 of our SAM file example above (`5S6M`) would describe an alignment where 5 bases are soft-clipped, followed by 6 matching bases.
 
 
-### Generating alignments
+## Generating alignments
+-----
 
 Since the reads we have been working with were generated as part of a eukaryotic RNA-seq experiment, we need to use a splice aware aligner that can generate gapped alignments. [STAR](https://github.com/alexdobin/STAR/blob/master/doc/STARmanual.pdf) (Spliced Transcripts Alignment to a Reference) is a  flexible and efficient short read aligner. We will use STAR as a general example of aligning short reads to a reference genome. Other short read aligners (e.g. `bwa` and `bowtie/bowtie2`) will use different syntax on the command line and you should carefully read the documentation for the aligner you plan to use.
 
-#### Constructing a genome index
+### Constructing a genome index
 
 Short read aligners require you to create an index of your reference genome before you can conduct an alignment. The index is in principle similar to how one might index a book, so that specific items or information can be found more quickly. For the genome index, we are indexing the genome so that the aligner can narrow down where a read may map to and speed up mapping.
 
@@ -250,22 +233,22 @@ Option details:
 - `--sjdbGTFfile`: path to genome annotation in .gtf format
 - `--sjdbOverhang`: default is 100, usually set to the readlength -1
 
-You can find the pre-built index at `/scratch/fund_of_bioinfo/ref/hg38_chr20_index/`. Once you have generated an index, it is best not to do anything with it, except tell STAR where it is when you want to align reads.
+You can find the pre-built index at `/scratch/fund_of_bioinfo/refs/hg38_chr20_index/`. Once you have generated an index, it is best not to do anything with it, except tell STAR where it is when you want to align reads.
 
-#### Aligning the reads
+### Aligning the reads
 
-We are ready to align our reads, present in the paired-end FASTQ files `SRR1039508_1.trim.chr20.fastq.gz` and `SRR1039508_2.trim.chr20.fastq.gz`.
+We are ready to align the reads from the paired-end FASTQ files `SRR1039508_1.trim.chr20.fastq.gz` and `SRR1039508_2.trim.chr20.fastq.gz`.
 
 ```bash
 # make a directory for aligned reads and enter it
-mkdir -p ../aligned
-cd ../aligned
+mkdir -p $FOB/aligned
+cd $FOB/aligned
 
 # run splice aware alignment
-STAR --genomeDir /dartfs-hpc/scratch/fund_of_bioinfo/hg38_chr20_index \
-  --readFilesIn ../trim/SRR1039508_1.trim.chr20.fastq.gz ../trim/SRR1039508_2.trim.chr20.fastq.gz \
+STAR --genomeDir $SOURCE/refs/hg38_chr20_index \
+  --readFilesIn $FOB/trim/SRR1039508_1.trim.chr20.fastq.gz $FOB/trim/SRR1039508_2.trim.chr20.fastq.gz \
   --readFilesCommand zcat \
-  --sjdbGTFfile /dartfs-hpc/scratch/fund_of_bioinfo/Homo_sapiens.GRCh38.97.chr20.gtf \
+  --sjdbGTFfile $SOURCE/refs/Homo_sapiens.GRCh38.97.chr20.gtf \
   --runThreadN 1 \
   --outSAMtype SAM \
   --outFilterType BySJout \
@@ -280,7 +263,7 @@ Option details:
 - `--runThreadN`: number of threads to use in the run
 - `--outSAMtype`: (SAM/BAM unsorted/ BAM SortedByCoordinate)
 - `--outFilterType`: how mapped reads will be filtered (normal/BySJout)
-- `--outFileNamePrefix`: prefix for outfiles generated in the run
+- `--outFileNamePrefix`: prefix for outfiles generated in the run, notice that this ends in "." so that the suffix of the outfiles is separated from the prefix
 
 > *NOTE:* It usually makes sense to set `outSAMtype` to `BAM SortedByCoordinate`, so that I do not need to convert the default SAM file output by STAR to BAM, then sort it. However, since we want to look inside the file at the alignments, we are creating a SAM first, and will convert to a BAM afterwards.
 
@@ -301,8 +284,10 @@ There are a number of ways that alignment quality can be assessed, many of them 
 cat SRR1039508.Log.final.out
 ```
 
-### Working with SAM/BAM files
-
+## Working with SAM/BAM files
+----
+# Left off here
+-------
 [Samtools](http://www.htslib.org/doc/samtools.html) is an extensive software suite that provides tools for working with alignment files. We will use Samtools to explore our alignments, and demonstrate some common tasks that can be performed using this software. While our alignments were generated from RNA-seq reads, the samtools usage examples below will be appliciable to analysis of any NGS data type.
 
 Using samtools with the `view` command and `-H` flag allows you to view the header line of a SAM file.
@@ -415,3 +400,18 @@ done
 - How much space does each file take up?
 
 - What is the best way to store the aligned file to minimize the space constraints?
+
+
+-----
+
+If you got lost, or didn't have enough time to finish the commands before we move to the next session you can copy the files needed for the next step with the following command.
+
+```bash
+# go to your scratch directory (e.g. $FOB)
+#make a directory to store aligned files
+mkdir -p $FOB/aligned
+
+# copy files
+cp $SOURCE/aligned/* $FOB/aligned/
+```
+
