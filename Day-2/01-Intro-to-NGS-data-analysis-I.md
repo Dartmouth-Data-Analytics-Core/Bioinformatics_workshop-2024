@@ -458,3 +458,14 @@ This option works in a similar way to the quality threshold option `-q` BUT igno
    - adjust the minimum read size threshold?
 
 - Can you write a loop to trim a series of fastq files and save it to a bash script?
+
+
+--------
+If you didn't have time to finish the lesson or you got lost you can copy the files needed for the next step using the following command. 
+
+```bash
+
+# IF YOU DIDN'T HAVE TIME TO FINISH TRIMMING COPY THOSE FILES NOW
+mkdir -p $FOB/trim
+cp $SOURCE/trim/* $FOB/trim/
+```
