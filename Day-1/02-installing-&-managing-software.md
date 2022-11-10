@@ -2,15 +2,15 @@
 
 ## Introduction
 
-Bioinformatics software can be installed and managed in a number of ways. It is important to be keep track of software versions so that you can report what was used for specific analyses/projects.
+Bioinformatics software can be installed and managed in a number of ways. It is important to be keep track of software versions so that you can report what was used for specific analyses/projects such that those analyses can be repeated by another user.
 
 Depending on the software to be installed, it may be available in one of the following formats:  
  - Pre-installed on your system (eg. linux core utilities)
- - Language-specific package managers (eg. R/Bioconductor, Python/pip)
  - Full package and environment management tools (eg. Conda)
  - Pre-compiled binary executable
  - Source code to be compiled
  - Virtual machine images (eg. Docker, Singularity)
+ - Language-specific package managers (eg. R/Bioconductor, Python/pip)
 
 <p align="center">
   <img src="../figures/software.png" height="230" width="450"/>
@@ -18,70 +18,54 @@ Depending on the software to be installed, it may be available in one of the fol
 
 In this lesson, we will introduce the major ways bioinformatics packages can be installed and managed through a command line interface.
 
----
 
+## What is software 
+----
+Before we discuss how to access software, it is important to understand the basics of compute resources. This may seem pedantic to some of you, but we want to make sure everyone is starting with the same background. The hardware of a system is the available memory and processing power of a compute resource. Software are a set of instructions, writing in a coding language, for manipulating data using the available hardware. Software can further be categorized into system software, which interfaces directly with the hardware of the compute system, an example of this would be your operating system and application software, which interfaces with the system software to leverage the hardware compute resources. All of the commands and software we will discuss in this workshop fall into the application category.
 
-## Software pre-installed on the system
-As seen above, Linux systems will have many core utilities for navigating the file system, creating, editing and removing files, downloading and uploading files, compiling code, submitting jobs to a cluster, and many more.  These utilities are commonly found in `/usr/bin`.  
+<p align="center">
+  <img src="../figures/softwareImage.png" height="50%" width="50%"/>
+</p>
 
-### What is software?
+As seen in the previous lesson, Linux systems will have many core utilities (software) for navigating the file system, creating, editing and removing files, and many more. In addition to these core utilities, there are many environmental variables already defined for you, one of these variables is `$PATH` which is defined by a list of absolute paths where software pre-installed on the system exists. Let's take a look at the variable `$PATH`
 
-### The $PATH environment variable points to available software on the cluster
+```bash
 
-Another very important environment variable is `$PATH`, which stores a list of directories that tells bash where specific programs that we want to be available to us are stored. Programs are executable files, and bash needs to know where these files are in order to run the commands as we call them.
-
-The list is stored as strings separated by colons, so that many directories can be defined. Use `echo` to print `$PATH` variable.
-```shell
-echo $PATH
-
-# Make the output more readable using 'tr' to swap the colons for newlines
-echo $PATH| tr ":" "\n"
+# look at the definition of $PATH with echo
+# Use the path so the output from the first command is the input of the second command
+# Use the 'tr' command to transform colons (:) to new lines (\n) so that each path is on a new line
+echo $PATH | tr ":" "\n"
 ```
 
-As you can see, many of the directory names end in `bin` which standards for *binary*, which is a common directory name to store executables (programs).
+You will notice many of the directory names end in `bin` which standards for *binary*, a common directory name to store executables (programs, software, commands, etc.).  
 
-Importantly, you can add directories to your `$PATH` as you either create or install programs, making them available to you as executables. Since the `$PATH` variable is set each time your `.bash_profile` is run at the start of a new session, the executables you add to `$PATH` will be available for you in a new bash session, without having to add them to your `$PATH` again.
+Your `$PATH` definition may look different from the instructors, as we have added paths to our `$PATH` variable as we've either created or installed programs. These programs are now available to us as executables as the `$PATH` variable is set by the `.bash_profile` at the start of each new session.
 
-We will create an executable file and add it to our $PATH in another lesson, however below is a toy example of how you would add a new executables directory to your `$PATH` variable:
-```
+Below is a toy example of how you would add a new executables directory to your `$PATH` variable:
+
+```bash
 export PATH="~/location/of/new/executables:$PATH"
 ```
 
-A command for finding where a program lives in the $PATH is the `which` command. This can be useful for debugging environment issues as they arise when trying to use or install new software. Check where the executable for the `echo` command is located.  The `which` command :
-```r
+In the command above we are re-defining the `$PATH` variable by adding a new path `~/location/of/new/executables` to the front of the existing definition of `$PATH` and separating the new path from the previous definition by a colon `:`. 
+
+Many of the commands we worked with in the previous lesson can be found in `/usr/bin`. A command for finding where a program lives in the $PATH is the `which` command. This can be useful for debugging environment issues as they arise when trying to use or install new software. Check where the executable for the `echo` command is located.  The `which` command :
+
+```bash
 which echo
 ```
 
-Many commands like `ls` will also accept wildcards, which are special character instances that allow you to do things like operate on multiple files at one time, or search for specific patterns (either in files or file names). A wildcard character is the asterisk, which can be used to represent any number of characters.
-```bash
-# list all files in my current directory with the file extension .txt
-ls *.txt
-```
-
-
-
 ### What does it mean for software to be installed?
-To run software on a Linux command line, the software must both exist, and be accessible by a relative or absolute path.  The commands below demonstrate how the programs 'gzip' and 'gunzip' are installed on our system:
+
+To run software on a Linux command line, the software must both exist, and be accessible by a relative or absolute path. When you do not provide a path to the software it is assumed that the software can be found in one of the locations defined in the `$PATH` variable. Lets demonstrate what happens when we remove these paths from the `$PATH` variable.
+
+
 ```shell
-#Check which directory we're in
+# Check which directory we're in
 pwd
-#/dartfs-hpc/scratch/sullivan/fundamentals_of_bioinformatics
 
-#Make a new directory to work in
-mkdir tools; cd tools
-
-#Establish a test file to try out gzip commands
-echo "test" > test.txt
-ls
-gzip test.txt
-ls
-zcat test.txt
-gunzip test.txt.gz
-ls
-
-#See where gzip is installed
-which gzip
-echo $PATH| grep "/usr/bin"
+#See where pwd software is installed
+which pwd
 
 #Save your path to retreive later
 PATH_BACKUP=$PATH
@@ -91,68 +75,82 @@ PATH=
 echo $PATH
 
 #Try these commands
+pwd
 ls
-gzip test.txt
-#Note that the programs are no longer accessible "ls: No such file"
+cat all_counts.txt
+#Note that the software is no longer accessible "pwd: No such file"
 
-#It's possible to call them directly
+#It's possible to call them directly, as they all exist
+/usr/bin/pwd
 /usr/bin/ls
-/usr/bin/gzip test.txt
-/usr/bin/ls
+/usr/bin/cat all_counts.txt
 
 #Re-establish your PATH variable
 PATH=$PATH_BACKUP
 echo $PATH
-gunzip test.txt.gz
-cat test.txt
+pwd
 ```
 
 
----
 
+## Accessing software from executable files
+-------
 
+When we defined software earlier we discussed two major types of software, applications and system software. When most software is written it has been written with a specific systems software in mind (usually C or C++ for bioinformatics software), this is generally referred to as the source code. In order to ensure that a piece of software is accessible to many different users and systems programmers will sometimes *compile* the source code. **Compiling** source code involves translating the source coding language to a target coding language that can be leveraged by all (most) system software. Once the source code has been compiled it is considered **executable**.  
 
-## Pre-compiled binary executable
+Some developers will pre-compile releases of their software for several operating systems and make them available for download. If a pre-compiled executable is available for the Linux system we are using (for Discovery, our OS is CentOS 7), this can be a painless way to install software. It only requires downloading the executable file to a directory and running it.  For example, the following code uses the `wget` command to download a binary, precompiled for Linux, of the bowtie2 aligner.
 
-### What does compiled mean?
-
-Some developers will pre-compile releases of their software for several operating systems and make them available for download. If a pre-compiled executable is available for the Linux system we are using (for Discovery, this is CentOS 7), this can be a painless way to install software. It only requires downloading the executable to a directory and running it.  For example, the following will download a binary, precompiled for Linux, of the bowtie2 aligner.
-```shell
+```bash
+# download the executable file
 wget https://github.com/BenLangmead/bowtie2/releases/download/v2.4.2/bowtie2-2.4.2-linux-x86_64.zip
+
+# unzip the executable file
 unzip bowtie2-2.4.2-linux-x86_64.zip
+
+# move into the directory with the executable
 cd bowtie2-2.4.2-linux-x86_64/
+
+# look at the contents of the directory
 ls
+
+# run the executable to look at the help menu
 ./bowtie2 --help
 ```
 
-Programs written in Java are frequently distributed as JAR files, which are similar to pre-compiled binaries in that only a single file is required to download and install the software. The JAR file is then run using the `java -jar` command.  For example, the following will download the "picard" set of genomics tools written in Java, and run it to output the help string.
-```shell
+Programs written in Java are frequently distributed as JAR files, which are similar to pre-compiled binaries in that only a single file is required to download and install the software. The JAR file is then run using the `java -jar` command.  For example, the following will download the "picard" set of genomics tools written in Java, and run it to output the help menu.
+
+```bash
+#download the jar file
 wget https://github.com/broadinstitute/picard/releases/download/2.23.9/picard.jar
+
+# run the executable with the java software to see the help menu
 /opt/java/jdk1.8.0_66/bin/java -jar picard.jar -h
 ```
 
----
 
-## Source code to be compiled
-If software is not available via a package manager, or via a pre-compiled executable, it must be compiled from source code.  For Bioinformatics software, this will usually be C or C++ code, and will be distributed with a "makefile", which can be compiled with the following commands.  
+### Source code to be compiled
 
-The `--prefix="/path/to/install"` defines the directory where the software will be installed.
-```shell
+Not all software is available via a pre-compiled executable, these files must be compiled from source code.  As mentioned previously, for Bioinformatics software this will usually be C or C++ code, and source code will be distributed with a "makefile", which can be compiled by the user with the following commands.  
+
+The `--prefix="/path/to/install"` defines the directory where the software will be installed. It is a good idea to use a path that exists in your `$PATH` variable, or at least to add the new path to your `$PATH` variable with the commands we learned above.
+
+```bash
 ./configure --prefix="/path/to/install"
 make
 make install
 ```
 
-With package managers becoming more widespread, you should only rarely need to install software by compiling source code.
-
----
+With package managers becoming more widespread, you should only rarely need to install software by compiling source code. 
 
 
 
 ## Conda - Full package and environment management
+----
 
-[Conda](https://docs.conda.io/projects/conda/en/latest/) is an open source package and environment manager that runs on Windows, MacOS and Linux. Conda allows you to install and update software packages as well as organize them efficiently into *environments* that you can switch between to manage software collections and versions.
+[Conda](https://docs.conda.io/projects/conda/en/latest/) is an open source package and environment manager that runs on Windows, MacOS and Linux. Conda allows you to install and update software packages as well as organize them efficiently into *environments* that you can switch between to manage software collections and versions. 
 
+Notice that in this section we have moved from discussing software to software packages. Often you will find that a program is written to leverage many other pieces of software, called dependencies. So one piece of software may combine data manipulation techniques from 5 other pieces of software to generate a unique output, these are the dependencies of the first piece of software. It is often the case that each of the 5 dependencies have their own dependencies, so that even though you're interfacing with the command structure for a single piece of software you're actually leveraging instructions for data manipulation from many pieces of software. To add even more complexity there are often multiple versions of software and dependencies each need to be a specfic version to function as part of the software you're interested in using. This is where software package managers like Conda really shine. 
+~~~~~~~~~~~~~~~~~~~~
 <img src="../figures/conda.png" height="60" width="250"/>
 
 Conda allows you to create a virtually unlimited number of software environments that can be used for specific analyses, and therefore presents efficient and reproducible way to manage your software across multiple projects.
