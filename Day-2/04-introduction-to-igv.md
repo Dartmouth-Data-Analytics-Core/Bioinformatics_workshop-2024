@@ -39,26 +39,21 @@ There is now also an [IGV web-app](https://igv.org/app/) that does not use Java 
  In fact IGV allows us to bring in multiple file types simultaneously so that they can be evaluated together.
 
 For example, it can be very useful to visualize variant calls alongside the alignment file used to generate them, in order to review evidence for specific variants.
+-----
 
 Let's load in the VCF file (`Day-2/data/1000G.chr20.sub.vcf.gz`) for the same region on chr20, containing all the called variants across subjects in the 1000 Genomes project, and explore the called variants using the VCF and alignment files simultaneously.  
 
----
-While a comprehensive overview variant review contrasting called variants against read alignments is beyond the scope of this workshop and more of an advanced topic, some aspects typically considered include:  
+While a comprehensive overview of contrasting called variants against read alignments is beyond the scope of this workshop and more of an advanced topic, some aspects typically considered include:  
 - Confriming all ALT reads are not strand-specific
 - Mapping qualities and base qualities are consistent across reads representing the REF & ALT allele
 - Variants are not called only at ends of reads
----
 
 ![](../figures/igv-08.png)
-|:--:|
-| **Figure 8 - Viewing VCF files in IGV** |
 
 All variants are summarized at the top of the variant track, however since this VCF file also includes subject-specific genotypes, those are also represented here using the colors indicated in the figure below.
 
 
 ![](../figures/igv-09.png)
-|:--:|
-| **Figure 9 - Viewing individual-level variant calls in IGV** |
 
 IGV allows you to customize how tracks are presented, and can be modified using `Preferences` found under the `View` tab. Tweaking preference can be useful in a number of ways:  
 - Modifying the window size that IGV will start to load reads at
@@ -66,10 +61,10 @@ IGV allows you to customize how tracks are presented, and can be modified using 
 - Allowing *soft-clipped* bases to be shown
 
 ![](../figures/igv-10.png)
-|:--:|
-| **Figure 10 - Preferences for tyrack views in IGV** |
 
-----
+------------------
+----- Peak calling data
+
 ## Visualizing signal tracks and genomic regions with IGV
 
 IGV also allows us to visualize a number of other genomic file types beyond BAM and VCF files. Very often in genomics experiments, we are interested in identifying regions of the genome that demonstrate increased signal compared to background. For example, DNA regions immunoprecipitated with a transcription-factor specific antibody in a ChIP-seq experiment.
