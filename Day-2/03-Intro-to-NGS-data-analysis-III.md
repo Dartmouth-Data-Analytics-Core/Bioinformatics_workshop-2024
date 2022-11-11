@@ -1,22 +1,22 @@
 # Working with NGS data Part III
 
-After generating read alignments to a reference genome, there are several downstream analysis tasks that can be performed to represent the final reduced representation of the dataset. How we use the read alignments to generate the reduced representation of teh dataset is dependent on what type of data we are working with (e.g. RNA-seq, ChIP-seq, WGS/WES).
+After generating read alignments to a reference genome, there are several downstream analysis tasks that can be performed to represent the final reduced representation of the dataset. How we use the read alignments to generate the reduced representation of the dataset is dependent on what type of data we are working with (e.g. RNA-seq, WGS/WES, ChIP-seq).
 
 **Read quantification:**
 - Often referred to as read counting, several NGS applications require us to count reads overlapping specific features to extract insights. For example, in RNA-seq, the number of reads overlapping each gene is used to infer expression level.
 
-**Peak calling:**
-- In some experiments, we are interested in identifying genomic regions with significant accumulations of sequencing reads (i.e. peaks). This is the case for data types where we have performed enrichment for a specific type of DNA, such as those bound by a particular protein (ChIP-seq) or accessible chromatin ((e.g. DNAase-seq, ATAC-seq).
-
 **Variant Calling:**
 - In WGS/WES experiments, we are usually interested in identifying genetic variants that are present in a sequenced sample, but not in teh reference genome that the sample was aligned to.
+
+**Peak calling:**
+- In some experiments, we are interested in identifying genomic regions with significant accumulations of sequencing reads (i.e. peaks). This is the case for data types where we have performed enrichment for a specific type of DNA, such as those bound by a particular protein (ChIP-seq) or accessible chromatin ((e.g. DNAase-seq, ATAC-seq).
 
 <p align="center">
 <img src="../figures/ngs-III.png" title="xxxx" alt="context"
 	width="90%" height="90%" />
 </p>
 
-In this lesson, we will briefly explore the fundamental concepts of *read quantification*, *peak calling*, and *variant calling*, while introducing useful software and relevant file formats for each.
+In this lesson, we will briefly explore the fundamental concepts of *read quantification*, *variant calling*, and *peak calling*, while introducing useful software and relevant file formats for each.
 
 ---
 
@@ -27,25 +27,23 @@ If you got lost or missed the last session you can copy all of the files we buil
 srun --nodes=1 --ntasks-per-node=1 --mem-per-cpu=4GB --cpus-per-task=1 --time=08:00:00 --partition=standard  --pty /bin/bash
 
 # navigate to your scratch directory
-cd /dartfs-hpc/scratch/YOUR_INTIALS_HERE/fundamentals_of_bioinformatics/
+cd $FOB
 
 # If you didn't have time to finish aligning copy these files now
-mkdir aligned
-cp /dartfs-hpc/scratch/fund_of_bioinfo/aligned/* /dartfs-hpc/scratch/YOUR_INITIALS_HERE/fundamentals_of_bioinformatics/aligned/
+mkdir -p $FOB/aligned
+cp $SOURCE/aligned/* $FOB/aligned/
 ```
 
+## Read count quantification
 ---
 
-## Read count quantification
-
-For most downstream analyses in RNA-seq, especially differential expression, we care about how many reads aligned to a specific gene, as this tells us about the gene's expression level, which we can then compare to other samples. Inherently, this means that we want to make these data count-based, so that we can use statistical models to compare these counts between experimental conditions of interest.
+For most downstream analyses in RNA-seq, especially differential expression, we want to know how many reads aligned to a specific feature, as this tells us about the features's expression level, so we can compare expression between samples. Inherently, this means that we want to make these data count-based, so that we can use statistical models to compare these counts between experimental conditions of interest.
 
 <p align="center">
 <img src="../figures/genoic-content.png" title="xxxx" alt="context"
 	width="100%" height="100%" />
 </p>
 
-> Although RNA-seq is the most common scenario where read counting is performed, read counting is relevant in the analysis of other genomic data types. For example, in ChIP-seq we often want to perform a differential binding analysis between two or more conditions, which requires us to count how many reads overlap each of our called peaks.
 
 Read quantification methods generally require two inputs:  
 - an alignment file (.bam)
@@ -53,9 +51,10 @@ Read quantification methods generally require two inputs:
 
 Recall that a GTF/GFF file is used to store genome annotation data, therefore contains the coordinates over all of the exons that we want to count reads.
 
-![](../figures/gtf.png)
+The most simplistic methods (e.g. [htseq-count](https://htseq.readthedocs.io/en/release_0.11.1/count.html), [featureCounts](http://subread.sourceforge.net/)) use a specific set of rules to count the number of reads overlapping specific features. These are a good choice if your data is less complex, e.g. 3'-end data. More complex methods or read quantification such as [RSEM](https://deweylab.github.io/RSEM/), determine the probability that a read should be counted for a particular feature, this is helpful if you're interested in something like differences in isoform expression data.
 
-The most simplistic methods (e.g. [htseq-count](https://htseq.readthedocs.io/en/release_0.11.1/count.html), [featureCounts](http://subread.sourceforge.net/)) use a specific set of rules to count the number of reads overlapping specific features. These are a good choice if your data is less complex, e.g. 3'-end data. More complex methods such as [RSEM](https://deweylab.github.io/RSEM/)), determines the probability that a read should be counted for a particular feature.
+------
+
 
 As an example, let's use [htseq-count](https://htseq.readthedocs.io/en/release_0.11.1/count.html) to quantify reads for an alignment we created in the previous lesson. Some important options in *htseq-count* include:
 
