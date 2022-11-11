@@ -272,7 +272,7 @@ As with most aligning, there are many options that can be set to control how rea
 **Alignment output**
 
 Once the alignment has finished, you should have a number of new files in your directory. These are composed of:  
-- `.sam` - your alignment file
+- `Aligned.out.sam` - your alignment file
 - `Log.out` - the log of the STAR run
 - `Log.final.out` - the summary file of the mapping statistics
 - `Log.progress.out` - a summary file that is updated with key mapping statistics as the run progresses
@@ -284,78 +284,15 @@ There are a number of ways that alignment quality can be assessed, many of them 
 cat SRR1039508.Log.final.out
 ```
 
-## Working with SAM/BAM files
-----
-# Left off here
--------
-[Samtools](http://www.htslib.org/doc/samtools.html) is an extensive software suite that provides tools for working with alignment files. We will use Samtools to explore our alignments, and demonstrate some common tasks that can be performed using this software. While our alignments were generated from RNA-seq reads, the samtools usage examples below will be appliciable to analysis of any NGS data type.
-
-Using samtools with the `view` command and `-H` flag allows you to view the header line of a SAM file.
-```bash
-samtools view -H SRR1039508.Aligned.out.sam  | head
-```
-
-`view` can also be used to print the first few alignments.
-```bash
-samtools view SRR1039508.Aligned.out.sam | head
-```
-
-It is common to sort SAM/BAM files as this is required by many downstream tools that take alignment files as input.
-```bash
-samtools sort SRR1039508.Aligned.out.sam -o SRR1039508.Aligned.out.sorted.sam
-```
-
-In practice, we can ask programs like STAR to give us indexed and sorted BAM files as output from the alignment, however this is not the case with all aligners and in these cases you will have to sort and index files after the alignment is complete. Now that we've looked at the alignments, we should convert our SAM to BAM for indexing and downstream analysis.
-```bash
-samtools view -S -b SRR1039508.Aligned.out.sorted.sam > SRR1039508.Aligned.out.sorted.bam
-```
-
-We should also index this BAM, which will create a file with the same name, but the suffix `.bai`.
-```bash
-samtools index SRR1039508.Aligned.out.sorted.bam
-```
-
-Another useful thing we might want to do with our BAM file is to count how many alignments have specific FLAG types (unique alignments, secondary, unmapped, properly paired).
-```bash
-samtools flagstat SRR1039508.Aligned.out.sorted.bam
-```
-
-We can even use the specific FLAGs in the BAM file to extract specific alignments. For example, you might want to produce BAM files where all of the *secondary alignments* have been filtered out:
-```bash
-# use -F option in view to filter out reads that were unmapped
-samtools view -F 4 SRR1039508.Aligned.out.sorted.bam -o SRR1039508.Aligned.out.sorted.unmapped.bam
-
-# count number of alignments
-samtools view -c SRR1039508.Aligned.out.sorted.unmapped.bam
-
-# directly count reads with specific flag without making an intermediate file
-### Note: using lower case -f retains alignments with flag specified, upper case -F filters out alignments with that flag  
-samtools view -c -f 4 SRR1039508.Aligned.out.sorted.unmapped.bam
-```
-
-
-### Visualizing alignments
-
-Alignments can be visualized using genome browser software such as the Integrative Genomics Viewer (IGV), allowing you to interactively explore alignments to a reference genome and how they overlap with genome annotation (e.g. gene models). This is an extremely useful way to visualize NGS data, and also allows you to review the evidence supporting downstream analysis results generated from aligned reads (e.g. variant calls).
-
-The figure below shows some example alignments for paired-end mouse RNA-seq data visualized using the IGV.
-
-<p align="center">
-<img src="../figures/rna-seq-alignments.png" title="xxxx" alt="context"
-	width="95%" height="95%" />
-</p>
-
-Note how the alignments pile up over the exons, which makes sense since these are RNA-seq data where only the transcriptome was sequenced. Alignment gaps are also present, which indicate alignments that span the intronic regions. If we had not used a gapped aligner such as STAR, we would have failed to generate many of these alignments.
-
-We will use IGV to visualize and explore some alignments interactively on day-2.
-
-
 ### Generate alignments for multiple samples
 
-It would be tedious (and more error prone) to repeat the code we used above to perform read mapping for multiple samples. We can use our new skills for coding through the UNIX shell to perform the mapping for multiple samples iteratively. In particular, we will use a `for` or `while` loop.
+It would be tedious (and error prone) to repeat the code we used above to perform read mapping for multiple samples. Instead we will use a `while` loop to capture iterate the alignment process over each of our samples. Before we run this loop it's worth breaking down what each line is doing:
+
+1. `ls $FOB/trim/*_1.trim.chr20.fastq.gz |while read x; do` list the forward read files and iterate through each sample. Since we don't want this loop to run twice for each sample (remember reads are paired) we are only specifying the forward read in our regular expression.
+2. `sample=/`echo "$x/`` save the file name to the variable sample, you will notice unlike our previous loops we don't want the echo statement to print to the screen instead we want the output of the command to be saved to our new variable `$sample` to do this we use the backticks `/``
 
 ```bash
-ls ../trim/*_1.trim.chr20.fastq.gz | while read x; do
+ls $FOB/trim/*_1.trim.chr20.fastq.gz | while read x; do
 
   # save the file name
   sample=`echo "$x"`
@@ -388,6 +325,94 @@ ls *Log.final.out | while read x; do
    cat $x
 done
 ```
+
+## Working with SAM/BAM files
+----
+
+[Samtools](http://www.htslib.org/doc/samtools.html) is an extensive software suite that provides tools for working with alignment files. We will use Samtools to explore our alignments, and demonstrate some common tasks that can be performed using this software. While our alignments were generated from RNA-seq reads, the samtools usage examples below will be appliciable to analysis of any NGS data type. As we mentioned previously Samtools is a software suite, meaning there are many commands that each accept different arguments and flags to perform an operation on an alignment file. Lets have a look at the commmands available.
+
+```bash
+# View the commands available in the Samtools software suite
+samtools --help
+```
+
+**Samtools viewing**
+
+You can see that all of the available commands are orgnaized into categories for indexing, editing, file operations, statistics, and viewing. Lets start with the viewing function by using samtools with the `view` command and `-H` flag to view the header line of a SAM file.
+
+```bash
+samtools view -H SRR1039508.Aligned.out.sam  | head
+```
+
+`view` can also be used to print the first few alignments.
+```bash
+samtools view SRR1039508.Aligned.out.sam | head
+```
+
+A commonly used file operation from this tool suite is the `sort` command to sort SAM/BAM files, as many downstream tools will only accept sorted alignment files as input. Here we are using the `-o` flag to indicate the name of the output file.
+```bash
+samtools sort SRR1039508.Aligned.out.sam -o SRR1039508.Aligned.out.sorted.sam
+```
+
+**Samtools file operations**
+In practice, we can ask programs like STAR to give us indexed and sorted BAM files as output from the alignment, however this is not the case with all aligners (bwa mem does not offer this option) and in these cases you will have to sort and index files after the alignment is complete. Now that we've looked at the alignments, we should convert our SAM to BAM for indexing and downstream analysis.
+```bash
+samtools view -S -b SRR1039508.Aligned.out.sorted.sam > SRR1039508.Aligned.out.sorted.bam
+```
+Take a look at the size difference between the SAM and BAM files you created. 
+```bash
+ls -lah SRR1039508.Aligned.out.sorted*
+```
+
+**Samtools indexing**
+We should also index this BAM, which will create a file with the same name, but the suffix `.bai`. Indexing coordinate sorted compressed(BAM/CRAM) files enables fast retrieval of specific regions of interest with tools like `samtools view`.
+```bash
+samtools index SRR1039508.Aligned.out.sorted.bam
+```
+
+**Samtools statistics**
+Another useful thing we might want to do with our BAM file is to count how many alignments have specific FLAG types (unique alignments, secondary, unmapped, properly paired). We discussed FLAG types above and as a reminder here is a link to an [excellent tool](https://broadinstitute.github.io/picard/explain-flags.html) for decoding FLAG types. Using the `flagstat` command will provide a summary of the alignment types in the file. 
+```bash
+samtools flagstat SRR1039508.Aligned.out.sorted.bam
+```
+
+We can modify the `view` command with the `-F` flag to filter out specific types of alignments. For example, you might want to produce a new BAM file with only primary alignments (no secondary alignment), you can filter for only primary alignments with the FLAG 256:
+```bash
+# use -F option in view to filter out reads that were unmapped
+samtools view -F 256 SRR1039508.Aligned.out.sorted.bam -o SRR1039508.Aligned.out.sorted.primary.bam
+
+
+# check flagstats of new file 
+samtools flagstat SRR1039508.Aligned.out.sorted.primary.bam
+
+# count number of reads in new file and old file
+samtools view -c SRR1039508.Aligned.out.sorted.primary.bam
+samtools view -c SRR1039508.Aligned.out.sorted.bam
+
+# count reads with specific flag
+### Note: using lower case -f retains alignments with flag specified, upper case -F filters out alignments with that flag  
+samtools view -c -f 256 SRR1039508.Aligned.out.sorted.primary.bam
+samtools view -c -f 256 SRR1039508.Aligned.out.sorted.bam
+```
+
+
+## Visualizing alignments with IGV
+----
+
+Alignments can be visualized using genome browser software such as the Integrative Genomics Viewer (IGV), allowing you to interactively explore alignments to a reference genome and how they overlap with genome annotation (e.g. gene models). This is an extremely useful way to visualize NGS data, and also allows you to review the evidence supporting downstream analysis results generated from aligned reads (e.g. variant calls).
+
+The figure below shows some example alignments for paired-end mouse RNA-seq data visualized using the IGV.
+
+<p align="center">
+<img src="../figures/rna-seq-alignments.png" title="xxxx" alt="context"
+	width="95%" height="95%" />
+</p>
+
+Note how the alignments pile up over the exons, which makes sense since these are RNA-seq data where only the transcriptome was sequenced. Alignment gaps are also present, which indicate alignments that span the intronic regions. If we had not used a gapped aligner such as STAR, we would have failed to generate many of these alignments.
+
+We will use IGV to visualize and explore some alignments interactively on day-2.
+
+
 
 ## Break out room exercises
 
