@@ -289,7 +289,7 @@ cat SRR1039508.Log.final.out
 It would be tedious (and error prone) to repeat the code we used above to perform read mapping for multiple samples. Instead we will use a `while` loop to capture iterate the alignment process over each of our samples. Before we run this loop it's worth breaking down what each line is doing:
 
 1. `ls $FOB/trim/*_1.trim.chr20.fastq.gz |while read x; do` list the forward read files and iterate through each sample. Since we don't want this loop to run twice for each sample (remember reads are paired) we are only specifying the forward read in our regular expression.
-2. `sample=/`echo "$x/`` save the file name to the variable sample, you will notice unlike our previous loops we don't want the echo statement to print to the screen instead we want the output of the command to be saved to our new variable `$sample` to do this we use the backticks `/``
+2. `sample=`echo "$x`` save the file name to the variable sample, you will notice unlike our previous loops we don't want the echo statement to print to the screen instead we want the output of the command to be saved to our new variable `$sample` to do this we use the backticks ```
 
 ```bash
 ls $FOB/trim/*_1.trim.chr20.fastq.gz | while read x; do
