@@ -1,69 +1,115 @@
 
-# Introduction to the Integrative Genomics Viewer (IGV)
-
-## What is IGV?
-
-The **Integrative Genomics Viewer (IGV)** is a very powerful piece of genomics software produced and distributed by researchers from the Broad Institute at MIT. IGV provides a fast and easy way to explore and visualize genomics data stored in various formats.
-
-<img src="../figures/igv.png" height="100" width="100"/>
-
-## Learning objectives:  
-* Introduce IGV, its basic user interface, and basic data navigation
-* Loading genomes and data into an IGV session
-* Discuss and explore how IGV represents data stored across distinct file types
-* Discuss exploratory analyses and visualizations that IGV is useful for
-* Reading in custom genomes
-* Saving and restoring an IGV session
-
-<hr>
+# Working with NGS data part IV
 
 
+**Peak calling:**
+- In some experiments, we are interested in identifying genomic regions with significant accumulations of sequencing reads (i.e. peaks). This is the case for data types where we have performed enrichment for a specific type of DNA, such as those bound by a particular protein (ChIP-seq) or accessible chromatin ((e.g. DNAase-seq, ATAC-seq).
 
----
+## Peak calling
 
-## How do we use IGV?
+In contrast to RNA-seq experiments, we are sometimes more concerned with identification of genomic regions that are enriched with aligned reads, rather than quantifying read numbers overlapping genomic features like exons. This is the case in ChIP-seq experiments, where we have used an antibody to enrich our sample for DNA bound to a specific protein, then perform sequencing to determine the location of these bound sites at a genome-wide level.
 
-IGV can be installed and run locally on MacOS, Linux and Windows as a Java desktop application (which is how we will use it today). You should have all downloaded and installed the Desktop version of IGV for the operating system you are working on.
+<p align="center">
+<img src="../figures/chip.png" title="" alt="context"
+	width="90%" height="90%" />
+</p>
 
-An example of how a typical IGV session might look is included below. In this example, we have:
-- Called peaks from multiple DNase-seq experiments (.BED)
-- DNase-seq signal tracks representing chromatin accessibility (.BIGWIG)
-- Representative alignments from one experiment (.BAM)
+Adapted from [Nakato & Sakata, *Methods*, 2020](https://www.sciencedirect.com/science/article/pii/S1046202320300591)
 
-![](../figures/igv-example.png)
+After sequencing the enriched regions of DNA and mapping them to a reference genome, we use statistical approaches to model the distribution of reads compared to those of a background sample (e.g. input DNA or IgG IP) in order to identify regions that are truly enriched regions representing real binding sites. This process is referred to as **peak calling**. Some example ChIP-seq alignments are shown below. You can see that the pileups in read density correlate with the called peaks shown in the green annotation tracks.
 
-There is now also an [IGV web-app](https://igv.org/app/) that does not use Java and only needs an internet browser, although is generally going to be slower than if you run the Desktop version.
+<p align="center">
+<img src="../figures/igv-11.png" title="" alt="context"
+	width="90%" height="90%" />
+</p>
 
----
+Alignments generated after mapping short reads from a ChIP-seq experiment to a reference genome generally show asymmetric distribution of reads on the +/- strand immediately around a binding site. By shifting these reads toward the middle, or extending them to the expected fragment length, we can generate a signal profile that is compared to the background signal from the control DNA sample using statistical models, ultimately assigning a probability value (*P*-value) to each peak.
 
- In fact IGV allows us to bring in multiple file types simultaneously so that they can be evaluated together.
-
-For example, it can be very useful to visualize variant calls alongside the alignment file used to generate them, in order to review evidence for specific variants.
------
-
-Let's load in the VCF file (`Day-2/data/1000G.chr20.sub.vcf.gz`) for the same region on chr20, containing all the called variants across subjects in the 1000 Genomes project, and explore the called variants using the VCF and alignment files simultaneously.  
-
-While a comprehensive overview of contrasting called variants against read alignments is beyond the scope of this workshop and more of an advanced topic, some aspects typically considered include:  
-- Confriming all ALT reads are not strand-specific
-- Mapping qualities and base qualities are consistent across reads representing the REF & ALT allele
-- Variants are not called only at ends of reads
-
-![](../figures/igv-08.png)
-
-All variants are summarized at the top of the variant track, however since this VCF file also includes subject-specific genotypes, those are also represented here using the colors indicated in the figure below.
+<p align="center">
+<img src="../figures/peak-calling.png" title="xxxx" alt="context"
+	width="90%" height="90%" />
+</p>
 
 
-![](../figures/igv-09.png)
 
-IGV allows you to customize how tracks are presented, and can be modified using `Preferences` found under the `View` tab. Tweaking preference can be useful in a number of ways:  
-- Modifying the window size that IGV will start to load reads at
-- Changing the types of reads that are masked from viewing (e.g. supplemental reads)
-- Allowing *soft-clipped* bases to be shown
+Part A has been adapted from [Park, *Nature Rev. Gen.*, 2009](https://www.nature.com/articles/nrg2641). Part B has been adapted from [Pepke et al, *Nature Methods*, 2009](https://www.nature.com/articles/nmeth.1371).
 
-![](../figures/igv-10.png)
 
-------------------
------ Peak calling data
+
+
+> While peak calling is typically associated with ChIP-seq, it is utilized in a growing number of genomic analysis workflows, especially in more recent years as the number of technologies being designed to profile various genomic features grows rapidly.
+
+Below is an example a shell command line usage that you could use to call peaks with MACS2.  
+
+*Do not run this is only an example*
+```bash
+macs2 callpeak \
+	-t sample-1-chip.bam \
+	-c sample-1-input.bam \
+	-f BAM \
+	-g 1.3e+8 \
+	--outdir peaks
+```
+
+- `t` denotes the file containing enriched sequence tags/alignments
+- `c` denotes the file containing control alignments, where no enrichment was performed
+- `f` describes the file type of the inputs
+- `g` is the total size of the genome
+- `--outdir` the file path you want results to be written to
+
+The peaks generated by MACS2 and other peak callers are stored using the **BED (Browser Extensible Data)** file format. BED files are text files used to store coordinates of genomic regions, and can be visualized directly in genome browsers such as UCSC and IGV. Three fields (columns) are required in BED files:
+- chrom
+- chromStart
+- chromEnd
+
+Nine additional optional fields can be provided to include additional information in a bed file. Other 'flavors' of BED files exist, that utilize several of the standard BED file format fields, as well as additional custom fields. `.narrowpeak` files are an example, and are referred to as a BED6+4 file format, as they use the first six columns of standard BED files with an additional 4 custom columns.
+
+<p align="center">
+<img src="../figures/bed.png" title="xxxx" alt="context"
+	width="90%" height="90%" />
+</p>
+
+The [UCSC website](https://genome.ucsc.edu/FAQ/FAQformat.html#format1) is an excellent resource for learning more about BED, narrowpeak, and other genomics file formats.
+
+Lets briefly explore a BED file on the command line. We will use `heart_E15.5_H3K9ac.bed` located in the scratch directory:
+```bash
+# examine the head and tail of the file
+head -n 10 /dartfs-hpc/scratch/fund_of_bioinfo/bed_files/heart_E15.5_H3K9ac.bed
+tail -n 10 /dartfs-hpc/scratch/fund_of_bioinfo/bed_files/heart_E15.5_H3K9ac.bed
+
+# count number of regions in the file
+wc -l /dartfs-hpc/scratch/fund_of_bioinfo/bed_files/heart_E15.5_H3K9ac.bed
+```
+
+> **Note:** The settings and options used to perform peak calling appropriately are dependent on the data you have (e.g. ChIP-seq, ATAC-seq, etc.) and the type of peak you are hoping to detect. TFs usually form narrow punctuate peaks but other marks, such as histone marks, typically form broader peaks, and can require different settings to accurately detect.
+
+After a set of peak regions have been defined, read quantification can be performed over these regions, since these count data can be used as input to a differential binding analysis (ChIP-seq) or a differential accessibility analysis (ATAC-seq), to identify peaks unique to an experimental condition.
+
+
+### Visualizing signal of enriched sequence tags (alignments)
+
+It is often useful to visualize extent of the signal in identified peak regions, to gain an idea of **how enriched** above background the signal in those regions was.
+
+Visualization of signal track data is usually achieved by converting alignment files (`.BAM` format) into a `bigWig` file, an indexed binary file format used to store dense continuous data (i.e. signal).
+
+`bigWig` files can be constructed from the `wiggle (Wig)` or `bedGraph` file formats, both of which are also used to store dense continuous data. bigWig, Wig, and bedGraph files formats are all described in more detail on the [UCSC website](http://genome.ucsc.edu/goldenPath/help/bigWig.html).
+
+<p align="center">
+<img src="../figures/chip-signal-genome-wide.png" title="xxxx" alt="context"
+	width="100%" height="100%" />
+</p>
+
+> For the purposes of this workshop, we only need understand the idea behind of bigwig files and what they are used for. We hope to address their generation and use in more detail in future workshops.
+
+Bigwig files can be used to evaluate signal across many genomic loci simultaneously. A common task is to plot signal directly upstream and downstream of called peaks. Consider the example below:
+
+<p align="center">
+<img src="../figures/chip-tss-example.png" title="" alt="context"
+	width="90%" height="90%" />
+</p>
+
+Adapted from Figure 1 of [Lin-Shiao *et al*, 2019, *Science Advances*](https://advances.sciencemag.org/content/5/5/eaaw0946)
+
 
 ## Visualizing signal tracks and genomic regions with IGV
 
