@@ -26,6 +26,13 @@ If you got lost or missed the last session you can copy all of the files we buil
 #log on to a compute node if not already on one:
 srun --nodes=1 --ntasks-per-node=1 --mem-per-cpu=4GB --cpus-per-task=1 --time=08:00:00 --partition=standard  --pty /bin/bash
 
+#establish a variable for the source directory if you haven't already
+SOURCE="/dartfs-hpc/scratch/fund_of_bioinfo"
+
+#establish a variable for your home directory if you haven't already 
+# *** REPLACE YOUR_INITIALS with your actual initials ***
+FOB="/dartfs-hpc/scratch/YOUR_INTIALS/fundamentals_of_bioinformatics/"
+
 # navigate to your scratch directory
 cd $FOB
 
@@ -53,10 +60,8 @@ Recall that a GTF/GFF file is used to store genome annotation data, therefore co
 
 The most simplistic methods (e.g. [htseq-count](https://htseq.readthedocs.io/en/release_0.11.1/count.html), [featureCounts](http://subread.sourceforge.net/)) use a specific set of rules to count the number of reads overlapping specific features. These are a good choice if your data is less complex, e.g. 3'-end data. More complex methods or read quantification such as [RSEM](https://deweylab.github.io/RSEM/), determine the probability that a read should be counted for a particular feature, this is helpful if you're interested in something like differences in isoform expression data.
 
-------
 
-
-As an example, let's use [htseq-count](https://htseq.readthedocs.io/en/release_0.11.1/count.html) to quantify reads for an alignment we created in the previous lesson. Some important options in *htseq-count* include:
+Here we will demonstrate gene level quantification with [htseq-count](https://htseq.readthedocs.io/en/release_0.11.1/count.html) to quantify reads for the alignments we created in the previous lesson. Some important options in *htseq-count* include:
 
 **Feature type (`-t`):**  
 Specifies the feature in your GTF file you want to count over (3rd column). The default is **exon**. However, this can be changed to any feature in your GTF file, so theoretically can be used to count any feature you have annotated.
@@ -66,19 +71,20 @@ Specifies if reads in your experiment come from a stranded (`yes`) or unstranded
 
 ```bash
 # go to your scratch dir
-biow
+cd $FOB
 
 # make a new directory to store your data in
-mkdir quantification
-cd quantification
+mkdir -p  $FOB/counts
+cd $FOB/counts
 
 # quantify reads that map to exons (default)
 htseq-count \
 -f bam \
 -s no \
 -r pos \
-../aligned/SRR1039508.Aligned.sortedByCoord.out.bam \
-/dartfs-hpc/scratch/fund_of_bioinfo/Homo_sapiens.GRCh38.97.chr20.gtf > SRR1039508.htseq-counts
+-t exon \
+$FOB/aligned/SRR1039508.Aligned.sortedByCoord.out.bam \
+$SOURCE/refs/Homo_sapiens.GRCh38.97.chr20.gtf > SRR1039508.htseq-counts
 ```
 
 Have a look at the resulting file.
@@ -94,6 +100,59 @@ tail -n 12 SRR1039508.htseq-counts
 ```
 
 This process can be repeated for each sample in your dataset, and the resulting files compiled to generate a matrix of raw read counts that serve as input to downstream analysis (e.g. differential expression or binding analysis).
+```bash
+ls $FOB/aligned/*.Aligned.sortedByCoord.out.bam | while read x; do
+
+  # save the file name
+  sample=`echo "$x"`
+  # get everything in file name before "/" (to remove '$FOB/alignment/')
+  sample=`echo "$sample" | cut -d"/" -f6`
+  # get everything in file name before "." e.g. "SRR1039508"
+  sample=`echo "$sample" | cut -d"." -f1`
+  echo processing "$sample"
+
+  # quantify reads that map to exons (default)
+  htseq-count \
+   -f bam \
+  -s no \
+  -r pos \
+  -t exon \
+  $FOB/aligned/$sample.Aligned.sortedByCoord.out.bam \
+  $SOURCE/refs/Homo_sapiens.GRCh38.97.chr20.gtf > $sample.htseq-counts;
+done
+```
+
+#### Sources of variation in RNAseq counts data
+
+In an RNAseq experiemnt like this one, the ultimate goal is to find out if there are genes whose expression level varies by conditions in your samples. The output from HTseq-count contains raw gene counts which cannot be compared within or between samples. This is due to many sources of variation within the counts that should be accounted for with normalization before counts are compared.
+
+**Gene length:**
+For comparisons within a sample it is important to normalize for gene length. If gene X is 1000bp long and gene Y is 2000bp long, we would expect that gene Y will recruit twice the reads in the dataset, purely due to the extra bp that represent the gene. If we didn't normalize for gene length and compared raw counts we might incorrectly assume that gene Y was expressed twice as much as gene X. This type of normalization is not needed for single end datasets, as reads are only mapped to the 3' end of the gene and counts will not be affected by genen length. 
+
+**Library size:**
+For comparisons between samples it is important to normalize for library size. If sample A has 10 million reads and sample B has 30 million reads and we want to compare the expression of gene X between samples we should first normalize for sequencing depth, else we may incorrectly assume that the expression of gene X in sample B is three times higher than in sample A. 
+
+**Library composition:**
+The presence of differentially expressed genes between samples causes the number of reads for other genes in those samples to be skewed. For example, lets assume two samples 1 & 2 and genes X, Y, & Z. Each sample has a library size of 10 million reads but gene Y is differentially expressed between the two samples, with much higher expression in sample 1. The high expression of gene Y in sample 1 leaves fewer reads available to map to genes X and Z, resulting in a low read counts in sample 1 relative to sample 2. The cause of the difference in expression levels of genes X and Z is the increased recruitment of reads to gene Y in sample 1. 
+
+<p align="center">
+<img src="../figures/library_composition.png" title="xxxx" alt="context"
+	width="85%" height="85%" />
+</p>
+
+Such library composition effects must also be accounted for during normalization to avoid falsely interpreting compositional effects as true differential expression findings. If samples you wish to compare are very distinct in their gene expression profiles, such as comparing drug-treated samples vs untreated samples, compositional effects may be large, therefore effectively correcting for these effects becomes critical for appropriate interpretation.
+
+#### Normalization methods
+
+It is beyond the scope of this workshop to discuss the mathematical formulas that are used to normalize RNAseq counts data, but below is a table describing common methods for normalizing data and what source of variation each method accounts for. We cover data normalization methods in more detail in our summer workshop series *RNAseq Data Analysis**.
+
+**Method** | **Name** | **Accounts for** | **Appropriate comparisons**
+-------|-------|-------|-------
+CPM | Counts per million | Depth	 | - Between-sample<br>- Within experimental group
+TPM | Transcripts per million | Depth & feature length | - Between- and within-sample<br>- Within experimental group
+RPKM/FPKM | Reads/fragments per kilobase<br>of exon per million | Depth & feature length | - Within-sample<br>
+RLE (DESeq2)|Median of ratios | Depth & library composition | Between sample
+TMM (edgeR)| Trimmed mean of M-values| Depth & library composition | Between sample
 
 
 ---
