@@ -9,12 +9,6 @@ After generating read alignments to a reference genome, there are several downst
 - In WGS/WES experiments, we are usually interested in identifying genetic variants that are present in a sequenced sample, but not in teh reference genome that the sample was aligned to.
 
 
-<p align="center">
-<img src="../figures/XXXX.png" title="xxxx" alt="context"
-	width="90%" height="90%" />
-</p>
-
-
 If you got lost or missed the last session you can copy all of the files we built in the alignment section with the following commands.
 ```bash
 
@@ -197,18 +191,6 @@ freebayes \
 -v $FOB/vars/SRR1039508.vcf \
 -b $FOB/aligned/SRR1039508.Aligned.sortedByCoord.out.bam 
 ```
-
-Have a look at the resulting file.
-```bash
-# how many lines
-wc -l SRR1039508.vcf
-
-# first few rows
-head SRR1039508.vcf
-
-# importantly, lets check the last few rows as these contain some important info
-tail SRR1039508.vcf
-```
 The standard file format output by variant callers is `Variant Call Format`, or `VCF`, which is a tabular format containing the genomic location of each variant and the level of evidence for it in each sample, as well as a header describing the construction of the file.
 
 <p align="center">
@@ -216,39 +198,81 @@ The standard file format output by variant callers is `Variant Call Format`, or 
 	width="90%" height="90%" />
 </p>
 
-
-This process can be repeated for each sample in your dataset, and the resulting files compiled to generate a matrix of raw read counts that serve as input to downstream analysis (e.g. differential expression or binding analysis).
+Have a look at the VCF file.
 ```bash
-ls $FOB/aligned/*.Aligned.sortedByCoord.out.bam | while read x; do
+# how many lines
+wc -l SRR1039508.vcf
 
-  # save the file name
-  sample=`echo "$x"`
-  # get everything in file name before "/" (to remove '$FOB/alignment/')
-  sample=`echo "$sample" | cut -d"/" -f6`
-  # get everything in file name before "." e.g. "SRR1039508"
-  sample=`echo "$sample" | cut -d"." -f1`
-  echo processing "$sample"
+# take a look at the header lines - lines all start with #
+grep "^#" SRR1039508.vcf
 
-  # call variants on chromosome 20
-freebayes \
--f $SOURCE/refs/Homo_sapiens.GRCh38.dna.primary_assembly.chr20.fa \
--r 20 \
--v $FOB/vars/$sample.vcf \
--b $FOB/aligned/$sample.Aligned.sortedByCoord.out.bam;
-done
+# take a look at some of the variant calls 
+grep -v "^#" SRR1039508.vcf|head -n3
 ```
+Of note are two fields of information that are particularly useful: 
+
+**AF** 
+indicates the alternate allele frequency in the dataset and can take on a value of 0, 0.5, or 1. The 
+
+**DP**
+indicates the read depth at that site
+
+You will notice the first three variants that we looked at all have an alternate allele frequency of 1, indicating full penetrance of the SNP, however the depth at each of these sites is between 2-3 reads. This isn't a SNP I would be particularly confident about reporting. Let's look for a SNP that we might have some confidence in by pulling any variant that has an alternate allele frequency of 1 and looking for a depth of more than 100 reads at that site. 
+
+```bash
+
+# count the number of variants with a frequency of 1
+grep -v "^#" SRR1039508.vcf|grep ";AF=1;"|wc -l
+
+# pull out the depth field and count how many instances of each depth there are, sort by least frequent depth to most frequent depth
+grep -v "^#" SRR1039508.vcf|grep ";AF=1;"|cut -d ";" -f8|sort |uniq -c|sort -n
+
+```
+
+You can see that in this dataset most of the SNPs called with and alternate allele frequency of 1 are in sites with very low coverage, though there are some site with hundreds of reads that represent the SNP call. Lets pull out the position of one of those SNPs on chromosome 20 and investigate the SNP further in IGV.
+
+```bash
+
+#pull out the position of the SNP with AF=1 and DP=425
+grep -v "^#" SRR1039508.vcf|grep ";AF=1;"|grep "DP=425"|cut -f2
+
+```
+
+Using filezilla download the VCF file from your `vars/` directory as well as the BAM file and indexed BAM file from your `aligned/` directory to your local machine and load them both into the IGV.
  
-After variant calling is performed and a confident set of variants is determined for each sample, some downstream analyses could include:
-- comparing variants found in tumor vs. normal pairs
-- variants found in resistant vs. non-resistant cell lines
-- statistical analysis of the presence of variants in any case-control disease populations.
 
--------
--------
-In fact IGV allows us to bring in multiple file types simultaneously so that they can be evaluated together.
+<p align="center">
+<img src="../figures/filezilla.png" title="" alt="context"
+	width="70%" height="70%" />
+</p>
 
-For example, it can be very useful to visualize variant calls alongside the alignment file used to generate them, in order to review evidence for specific variants.
+
+Load the data into IGV using the `File` menu and selecting `Load from File...`, this will bring up the finder window and you can navigate to the directory that contains your data. You MUST have the indexed BAM file (ends in .bai) in the same directory as the BAM file for IGV to load the file. Load both the BAM file and the VCF file, once your data are  in IGV you should see something like this (IGV version 2.15.2 default settings).
+
+<p align="center">
+<img src="../figures/IGV_vcfLoaded.png" title="" alt="context"
+	width="70%" height="70%" />
+</p>
+
+
+Next we will navigate to the position of the SNP we are checking on, recall this SNP was at position 3668514. Type `chr20:2668514` into the position window and hit enter. This will automatically center the position of interest on your screen. You can see that the alternate allele (G) is present in the *ADDAM33* gene and all but one read at this position carry the SNP, thus it is very unlikely that this SNP is due to a sequencing error. 
+
+<p align="center">
+<img src="../figures/IGV_vcfPosition.png" title="" alt="context"
+	width="70%" height="70%" />
+</p>
+
+Now lets have a look at one of the lower confidence reads we saw at the top of the VCF file, position 274210. You can see that this region represents an intron in the *C20orf96* gene, and that though all reads carry the SNP ther are only 2 reads mapping here. This probably doesn't represent a SNP that is affecting the genotype of the cell. 
+
+<p align="center">
+<img src="../figures/IGV_vcfLowConfidence.png" title="" alt="context"
+	width="70%" height="70%" />
+</p>
+
 -----
+
+It isn't exactly surprising that there aren't many SNPs with very high frequency and high covereage as this is an RNAseq dataset for treated vs. untreated human airway cells. It would be surprising if astham treatment caused SNPs in the genome, and so this is a result that makes perfect sense given the experimental set up. However the steps that we applied with these data could be practically applied to a similar experimental set up with for example, a treated vs. untreated breast cancer RNAseq dataset we might expect both read quantification and variant calling to be informative.
+
 
 Let's load in the VCF file (`Day-2/data/1000G.chr20.sub.vcf.gz`) for the same region on chr20, containing all the called variants across subjects in the 1000 Genomes project, and explore the called variants using the VCF and alignment files simultaneously.  
 
@@ -270,3 +294,37 @@ IGV allows you to customize how tracks are presented, and can be modified using 
 - Allowing *soft-clipped* bases to be shown
 
 ![](../figures/igv-10.png)
+
+----
+
+After variant calling is performed and a confident set of variants is determined for each sample, some downstream analyses could include:
+- comparing variants found in tumor vs. normal pairs
+- variants found in resistant vs. non-resistant cell lines
+- statistical analysis of the presence of variants in any case-control disease populations.
+
+
+
+### Breakout Room activities
+
+- BUild a loop for running variant calling on all 4 samples using the following framework
+
+```bash
+ls $FOB/aligned/*.Aligned.sortedByCoord.out.bam | while read x; do
+
+  # save the file name
+  sample=`echo "$x"`
+  # get everything in file name before "/" (to remove '$FOB/alignment/')
+  sample=`echo "$sample" | cut -d"/" -f6`
+  # get everything in file name before "." e.g. "SRR1039508"
+  sample=`echo "$sample" | cut -d"." -f1`
+  echo processing "$sample"
+
+  # call variants on chromosome 20
+freebayes \
+-f $SOURCE/refs/Homo_sapiens.GRCh38.dna.primary_assembly.chr20.fa \
+-r 20 \
+-v $FOB/vars/$sample.vcf \
+-b $FOB/aligned/$sample.Aligned.sortedByCoord.out.bam;
+done
+```
+
