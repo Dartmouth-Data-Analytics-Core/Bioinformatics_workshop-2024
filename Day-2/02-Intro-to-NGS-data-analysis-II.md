@@ -459,6 +459,16 @@ Some of the main UI features include:
 ![](../figures/igv-01.png)
 
 
+IGV allows you to customize how tracks are presented, and can be modified using `Preferences` found under the `View`tab. Tweaking preference can be useful in a number of ways:
+
+Modifying the window size that IGV will start to load reads at
+Changing the types of reads that are masked from viewing (e.g. supplemental reads)
+Allowing soft-clipped bases to be shown
+
+![](../figures/IGV_preferences.png)
+
+
+
 ### Working with BAM files (alignments) in IGV
 
 BAM files can be loaded using the `File` tab and selecting `Load from file`. We will use an example BAM file that contains a small number of alignments on chromosome 20 (to reduce file size) of *hg19*, generated from low pass whole-genome sequencing of an individual in the [*1000 Genomes Project*](https://www.internationalgenome.org/home)
