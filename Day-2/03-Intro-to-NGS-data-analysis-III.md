@@ -255,7 +255,7 @@ Load the data into IGV using the `File` menu and selecting `Load from File...`, 
 </p>
 
 
-Next we will navigate to the position of the SNP we are checking on, recall this SNP was at position 3668514. Type `chr20:2668514` into the position window and hit enter. This will automatically center the position of interest on your screen. You can see that the alternate allele (G) is present in the *ADDAM33* gene and all but one read at this position carry the SNP, thus it is very unlikely that this SNP is due to a sequencing error. 
+Next we need to navigate to the position of the alternate allele we want to verify, recall this SNP was at position 3668514. Type `chr20:2668514` into the position window and hit enter. This will automatically center the position of interest on your screen. You can see that the alternate allele (G) is present in the *ADDAM33* gene and all but one read at this position carry the SNP, thus it is very unlikely that this SNP is due to a sequencing error. 
 
 <p align="center">
 <img src="../figures/IGV_vcfPosition.png" title="" alt="context"
@@ -269,44 +269,29 @@ Now lets have a look at one of the lower confidence reads we saw at the top of t
 	width="70%" height="70%" />
 </p>
 
------
 
-It isn't exactly surprising that there aren't many SNPs with very high frequency and high covereage as this is an RNAseq dataset for treated vs. untreated human airway cells. It would be surprising if astham treatment caused SNPs in the genome, and so this is a result that makes perfect sense given the experimental set up. However the steps that we applied with these data could be practically applied to a similar experimental set up with for example, a treated vs. untreated breast cancer RNAseq dataset we might expect both read quantification and variant calling to be informative.
-
-
-Let's load in the VCF file (`Day-2/data/1000G.chr20.sub.vcf.gz`) for the same region on chr20, containing all the called variants across subjects in the 1000 Genomes project, and explore the called variants using the VCF and alignment files simultaneously.  
-
-While a comprehensive overview of contrasting called variants against read alignments is beyond the scope of this workshop and more of an advanced topic, some aspects typically considered include:  
+Other cannonical applications of VCF data might include:
 - Confriming all ALT reads are not strand-specific
 - Mapping qualities and base qualities are consistent across reads representing the REF & ALT allele
 - Variants are not called only at ends of reads
 
-![](../figures/igv-08.png)
+-----
 
-All variants are summarized at the top of the variant track, however since this VCF file also includes subject-specific genotypes, those are also represented here using the colors indicated in the figure below.
-
+It isn't exactly surprising that there aren't many SNPs with high frequency and high covereage, these RNAseq data are from untreated airway smooth muscle donor cell lines. However the same analysis procedure applied to a cancer data or population genetics might be quite informative. The example VCF file (`Day-2/data/1000G.chr20.sub.vcf.gz`) contains all called variants across subjects in the 1000 Genomes project. All variants for chromosome 20 are summarized at the top of the variant track. This VCF file also includes subject-specific genotypes, represented here using the colors indicated in the figure below.
 
 ![](../figures/igv-09.png)
 
-IGV allows you to customize how tracks are presented, and can be modified using `Preferences` found under the `View` tab. Tweaking preference can be useful in a number of ways:  
-- Modifying the window size that IGV will start to load reads at
-- Changing the types of reads that are masked from viewing (e.g. supplemental reads)
-- Allowing *soft-clipped* bases to be shown
 
-![](../figures/igv-10.png)
-
-----
-
-After variant calling is performed and a confident set of variants is determined for each sample, some downstream analyses could include:
+Once variant calling is performed and a confident set of variants is determined for each sample, some downstream analyses could include:
 - comparing variants found in tumor vs. normal pairs
 - variants found in resistant vs. non-resistant cell lines
 - statistical analysis of the presence of variants in any case-control disease populations.
 
 
-
 ### Breakout Room activities
+---
 
-- BUild a loop for running variant calling on all 4 samples using the following framework
+- Build a code loop for running variant calling on all 4 samples using the following framework
 
 ```bash
 ls $FOB/aligned/*.Aligned.sortedByCoord.out.bam | while read x; do
@@ -320,11 +305,10 @@ ls $FOB/aligned/*.Aligned.sortedByCoord.out.bam | while read x; do
   echo processing "$sample"
 
   # call variants on chromosome 20
-freebayes \
--f $SOURCE/refs/Homo_sapiens.GRCh38.dna.primary_assembly.chr20.fa \
--r 20 \
--v $FOB/vars/$sample.vcf \
--b $FOB/aligned/$sample.Aligned.sortedByCoord.out.bam;
+  # remember to add flags for the reference, input BAM file, and output VCF file
+  # use the freebayes --help command to remind you what the flags each do
+
+;
 done
 ```
-
+- Take a look at the VCF file for DEX treated sample SRR1039509. Are there more SNPs than in sample SRR1039508 (untreated)? Would you expect there to be?
