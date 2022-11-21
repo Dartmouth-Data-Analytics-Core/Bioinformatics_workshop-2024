@@ -29,7 +29,7 @@ We have designed the schedule so that breaks are essentially built into the brea
 - **XXX-XXX - Intro. to NGS data analysis-III (counts/WIG/VCF files)**  
 - **XXX-XXX - Intro. to the IGV**
 
-- **Homework - Basics of R programming**
+- **Homework - Basics of R programming, optional lesson review Thursday December 8, 2-3PM**
 ---
 
 ## Day3
