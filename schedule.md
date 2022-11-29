@@ -26,8 +26,8 @@ We have designed the schedule so that breaks are essentially built into the brea
 - **12:00-12:10 - Day 1 recap & questions**
 - **12:10-1:10 - Intro. to NGS data analysis-I (FASTQ files)**  
 - **1:25-2:45 - Intro. to NGS data analysis-II (BAM/SAM files)**
-- **XXX-XXX - Intro. to NGS data analysis-III (counts/WIG/VCF files)**  
-- **XXX-XXX - Intro. to the IGV**
+- **3:00-3:45 - Intro. to NGS data analysis-III (counts/VCF files)**  
+- **4:00-5:00 - Intro. to NGS data analysis-IV (Bed/WIG files)**
 
 - **Homework - Basics of R programming, optional lesson review Thursday December 8, 2-3PM**
 ---
