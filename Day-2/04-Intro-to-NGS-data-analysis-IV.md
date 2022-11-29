@@ -1,13 +1,23 @@
 
 # Working with NGS data part IV
 
+## Introduction
+Instead of sequencing all available DNA or RNA, we sometimes intentionally isolate specific subsets of DNA/RNA for sequencing analysis. For example, ChIP-seq is used to *'pull-down'* the DNA associated with a specific DNA binding protein, allowing us to idnetify transcription factor binding sites, for example. Alternatively, ATAC-seq is used to isolate only the accessible regions of DNA, enabling us to identify the landscape of functionally active genomic regions in a sample. 
 
-**Peak calling:**
-- In some experiments, we are interested in identifying genomic regions with significant accumulations of sequencing reads (i.e. peaks). This is the case for data types where we have performed enrichment for a specific type of DNA, such as those bound by a particular protein (ChIP-seq) or accessible chromatin ((e.g. DNAase-seq, ATAC-seq).
+Such methods also generate read alignments, however using these for **read quantification** or **variant calling** won't tell us which regions of the genome were isolated in the experiment. Instead, we perform an analytical procedure called **peak calling**, where we systematically scan the genome to agnostically identify regions containing read *pile-ups* that we call **peaks**. These peaks represent the regions of DNA/RNA isolated in the experiment. 
+
+---
+
+## Learning Objectives: 
+- Understand the basic principles of *peak calling* 
+- Familiarize yourself with the *BED* and *BigWig* file formats for storing genomics data 
+- Learn how to visualize peak calling results in IGV with the *BED* and *BigWig* file formats 
+---
+
 
 ## Peak calling
 
-In contrast to RNA-seq experiments, we are sometimes more concerned with identification of genomic regions that are enriched with aligned reads, rather than quantifying read numbers overlapping genomic features like exons. This is the case in ChIP-seq experiments, where we have used an antibody to enrich our sample for DNA bound to a specific protein, then perform sequencing to determine the location of these bound sites at a genome-wide level.
+As introduced above, peak calling algorithms use the aligned reads to scan through a reference genome and identify regions that contain large pile-ups of aligned reads. The regions where these pile-ups exist represent the regions of DNA that were isolated in your experiment. For example, in a ChIP-seq experiment, an antibody is used to obtain the DNA bound by a specific protein. Once this DNA is sequenced and aligned to a reference genome, the peak calling algorithm with reveal the locations of all DNA isolated in the experiment. The resulting peak regions can be used for a range of downstream analysis such as motif finding, gene ontology analysis, and unsupervised clustering. 
 
 <p align="center">
 <img src="../figures/chip.png" title="" alt="context"
@@ -16,7 +26,7 @@ In contrast to RNA-seq experiments, we are sometimes more concerned with identif
 
 Adapted from [Nakato & Sakata, *Methods*, 2020](https://www.sciencedirect.com/science/article/pii/S1046202320300591)
 
-After sequencing the enriched regions of DNA and mapping them to a reference genome, we use statistical approaches to model the distribution of reads compared to those of a background sample (e.g. input DNA or IgG IP) in order to identify regions that are truly enriched regions representing real binding sites. This process is referred to as **peak calling**. Some example ChIP-seq alignments are shown below. You can see that the pileups in read density correlate with the called peaks shown in the green annotation tracks.
+In the below example of a ChIP-seq dataset, you can see all the alignments to specific region of chr11 in the mouse genome (reference *mm10*), as well as the peak calls identified by peak called *MACS2*. You can clearly see that the pileups in read density correlate with the called peak regions. 
 
 <p align="center">
 <img src="../figures/igv-11.png" title="" alt="context"
@@ -110,6 +120,7 @@ Bigwig files can be used to evaluate signal across many genomic loci simultaneou
 
 Adapted from Figure 1 of [Lin-Shiao *et al*, 2019, *Science Advances*](https://advances.sciencemag.org/content/5/5/eaaw0946)
 
+---
 
 ## Visualizing signal tracks and genomic regions with IGV
 
@@ -122,7 +133,6 @@ We are also often in interested in *how much signal* these regions show in compa
 
 ![](../figures/igv-11.png)
 |:--:|
-| **Figure 11 - ChIP signal, peak regions, and alignments for an example experiment** |
 
 Lets read in some example ChIP-seq data (as shown in Figure 11) to demonstrate how you might go about exploring these types of data. We will use data from a recently published study of the dynamic regulatory landscape in the developing mouse ([Gorkin *et al*, 2020](https://www.nature.com/articles/s41586-020-2093-3?proof=t)).
 
@@ -155,7 +165,6 @@ Peaks called for each histone mark in either forebrain or heart tissue are now v
 
 ![](../figures/igv-12.png)
 |:--:|
-| **Figure 12 - ChIP peaks for H3K27ac and H3K9ac in mouse E15.5 forebrain & heart tissues** |
 
 Now use the search bar to navigate to the *Neurod2* gene. Clearly, the presence of peaks in forebrain tissues and the absence in heart suggests this region is only transcriptionally active in the developing forebrain.
 
@@ -169,7 +178,6 @@ Bigwig files to load:
 
 ![](../figures/igv-13.png)
 |:--:|
-| **Figure 13 - ChIP peaks & signal for H3K27ac and H3K9ac in mouse E15.5 forebrain & heart tissues** |
 
 Note the differences in the scales shown at the top left of each signal track. To fairly compare differences between samples, we need to use the same scale. Highlight the signal tracks and right click to select the `Autoscale` option.
 
@@ -178,7 +186,6 @@ Setting signal tracks to be on the same scale is very important when comparing b
 
 ![](../figures/igv-14.png)
 |:--:|
-| **Figure 14 - ChIP peaks **& signal** for region surrounding *Neurod2* ** |
 
 IGV can also be used to compare multiple regions simultaneously using the split view functionality. There are a number of ways the split view can be activated, but perhaps the easiest is using the search bar.
 
@@ -188,7 +195,6 @@ Enter the following into the search bar to activate split view:
 
 ![](../figures/igv-15.png)
 |:--:|
-| **Figure 15 - ChIP peaks **& signal** for region surrounding *Neurod2* ** |
 
 Split view has a number of useful applications, however it is especially useful when reviewing alignment evidence for complex structural variants or translocations (although we won't cover that today).
 
@@ -203,7 +209,6 @@ Try saving the current session using `Save session...` under the `File` tab.
 
 ![](../figures/igv-16.png)
 |:--:|
-| ** Figure 16 - Saving sessions in IGV ** |
 
 ---
 
