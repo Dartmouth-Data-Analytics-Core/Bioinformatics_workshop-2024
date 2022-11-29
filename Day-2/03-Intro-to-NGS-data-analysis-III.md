@@ -1,6 +1,7 @@
 # Working with NGS data Part III
 
-After generating read alignments to a reference genome, there are several downstream analysis tasks that can be performed to represent the final reduced representation of the dataset. How we use the read alignments to generate the reduced representation of the dataset is dependent on the hypothesis we are testing. Two very common tasks that are performed on alignment data are read quantification and variant calling.
+## Introduction
+After generating read alignments to your genome of interest, there are several downstream analysis tasks that can be performed to represent the final reduced representation of the dataset. How we use the read alignments to generate the reduced representation of the dataset is dependent on the hypothesis we are testing. Two very common tasks that are performed on alignments are *read quantification* and *variant calling*.
 
 **Read quantification:**
 - Often referred to as read counting, several NGS applications require us to count reads overlapping specific features to extract insights. For example, in RNA-seq, the number of reads overlapping each gene is used to infer expression level.
@@ -8,6 +9,18 @@ After generating read alignments to a reference genome, there are several downst
 **Variant Calling:**
 - In WGS/WES experiments, we are usually interested in identifying genetic variants that are present in a sequenced sample, but not in teh reference genome that the sample was aligned to.
 
+---
+
+## Learning Objectives: 
+- Understand the concept of read quantification/counting and the downstream applications this is useful for 
+- Learn how to perform a simple read count quantification using [htseq-count](https://htseq.readthedocs.io/en/release_0.11.1/count.html)
+- Understand why raw read counts must undergo normalization before making any inferences on the data 
+- Understand the basic premise of variant calling from NGS read alignments 
+- Learn how to generate putative variant calls with [FreeBayes](https://github.com/freebayes/freebayes) and explore the results using IGV 
+
+---
+
+## Lesson setup: 
 
 If you got lost or missed the last session you can copy all of the files we built in the alignment section with the following commands.
 ```bash
@@ -29,9 +42,9 @@ cd $FOB
 mkdir -p $FOB/aligned
 cp $SOURCE/aligned/* $FOB/aligned/
 ```
-
-## Read count quantification
 ---
+
+## Part 1: Read count quantification
 
 For most downstream analyses in RNA-seq, especially differential expression, we want to know how many reads aligned to a specific feature, as this tells us about the features's expression level, so we can compare expression between samples. Inherently, this means that we want to make these data count-based, so that we can use statistical models to compare these counts between experimental conditions of interest.
 
@@ -142,10 +155,9 @@ RPKM/FPKM | Reads/fragments per kilobase<br>of exon per million | Depth & featur
 RLE (DESeq2)|Median of ratios | Depth & library composition | Between sample
 TMM (edgeR)| Trimmed mean of M-values| Depth & library composition | Between sample
 
-
-
-## Variant calling
 ---
+
+## Part 2: Variant calling
 
 Following an experiment such as Whole Genome Sequencing (WGS) or Exome Sequencing (WES) and subsequent read alignment, a common next step is variant calling. **Genomic variants** are locations in the sequenced samples where the sequenced reads differ from the reference genome to which they have been aligned.  
 
