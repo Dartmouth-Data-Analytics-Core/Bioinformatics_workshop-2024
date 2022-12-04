@@ -5,7 +5,7 @@
 Bioinformatics software can be installed and managed in a number of ways. It is important to be keep track of software versions so that you can report what was used for specific analyses/projects such that those analyses can be repeated by another user.
 
 Depending on the software to be installed, it may be available in one of the following formats:  
- - Pre-installed on your system (eg. linux core utilities)
+ - Pre-installed on your system (eg. Linux core utilities)
  - Full package and environment management tools (eg. Conda)
  - Pre-compiled binary executable
  - Source code to be compiled
@@ -57,7 +57,7 @@ which echo
 
 ### What does it mean for software to be installed?
 
-To run software on a Linux command line, the software must both exist, and be accessible by a relative or absolute path. When you do not provide a path to the software it is assumed that the software can be found in one of the locations defined in the `$PATH` variable. Lets demonstrate what happens when we remove these paths from the `$PATH` variable.
+To run software on a Linux command line, the software must both exist, and be accessible by a relative or absolute path. When you do not provide a path to the software it is assumed that the software can be found in one of the locations defined in the `$PATH` variable. Let's demonstrate what happens when we remove these paths from the `$PATH` variable.
 
 
 ```shell
@@ -67,7 +67,7 @@ pwd
 #See where pwd software is installed
 which pwd
 
-#Save your path to retreive later
+#Save your path to retrieve later
 PATH_BACKUP=$PATH
 
 #Empty your PATH variable
@@ -147,9 +147,9 @@ With package managers becoming more widespread, you should only rarely need to i
 ## Conda - Full package and environment management
 ----
 
-[Conda](https://docs.conda.io/projects/conda/en/latest/) is an open source package and environment manager that runs on Windows, MacOS and Linux. Conda allows you to install and update software packages as well as organize them efficiently into *environments* that you can switch between to manage software collections and versions. 
+[Conda](https://docs.conda.io/projects/conda/en/latest/) is an open-source package and environment manager that runs on Windows, MacOS and Linux. Conda allows you to install and update software packages as well as organize them efficiently into *environments* that you can switch between to manage software collections and versions. 
 
-Notice that in this section we have moved from discussing software to software packages. Often you will find that a program is written to leverage many other pieces of software, called dependencies. So one piece of software may combine data manipulation techniques from 5 other pieces of software to generate a unique output, these are the dependencies of the first piece of software. It is often the case that each of the 5 dependencies have their own dependencies, so that even though you're interfacing with the command structure for a single piece of software you're actually leveraging instructions for data manipulation from many pieces of software. To add even more complexity there are often multiple versions of software and dependencies each need to be a specfic version to function as part of the software you're interested in using. This is where software package managers like Conda really shine. 
+Notice that in this section we have moved from discussing software to software packages. Often you will find that a program is written to leverage many other pieces of software, called dependencies. So one piece of software may combine data manipulation techniques from 5 other pieces of software to generate a unique output, these are the dependencies of the first piece of software. It is often the case that each of the 5 dependencies have their own dependencies, so that even though you're interfacing with the command structure for a single piece of software you're actually leveraging instructions for data manipulation from many pieces of software. To add even more complexity there are often multiple versions of software and dependencies each need to be a specific version to function as part of the software you're interested in using. This is where software package managers like Conda really shine. 
 
 <img src="../figures/conda.png" height="60" width="250"/>
 
@@ -232,9 +232,9 @@ Conda is an excellent way to install and manage software for bioinformatics, sin
 ## Containerized software environments (eg. Docker, Singularity)
 ----
 
-### How do VM images differ from conda environments
+### How VM images differ from conda environments
 
-While package managers like Conda distribute software and all of it's dependencies you are responsible for ensuring that the software you download will run on the OS system your compute resources use. Containerized software environments allow software to be distributed along with an entire linux environment, because of this you will never run into issues with application and system software incompatibilities. Another advantage of containers is that they are constructed to execute a specific analysis and thus are distributed with any configuration files needed to leverage all software inside the container. To replicate the anlysis you only need to provide a path to input and output files. 
+While package managers like Conda distribute software and all of it's dependencies you are responsible for ensuring that the software you download will run on the OS system your compute resources use. Containerized software environments allow software to be distributed along with an entire Linux environment, because of this you will never run into issues with application and system software incompatibilities. Another advantage of containers is that they are constructed to execute a specific analysis and thus are distributed with any configuration files needed to leverage all software inside the container. To replicate the analysis, you only need to provide a path to input and output files. 
 
 However, one disadvantage of containers is that they can raise security issues when working with high performance computing clusters such as discovery. Docker cannot currently be used on discovery, and singularity images that can be currently used are somewhat limited.
 
@@ -244,7 +244,7 @@ However, one disadvantage of containers is that they can raise security issues w
 ## Language-specific package managers
 ---
 
-Package managers for specific programming languages aim to make the installation of packages or libraries more simple, and from a central location. This allows software to be installed using a single command, rather than having to search the internet for each piece of software and download/install it separately.
+Package managers for specific programming languages aim to maintain a central location for packages and libraries, and to simplify their installation. This allows software to be installed using a single command, rather than having to search the internet for each piece of software and download/install it separately.
 
 In Python, packages are available in PyPI. To install Python packages from PyPI (from within the bash shell):
 ```shell
