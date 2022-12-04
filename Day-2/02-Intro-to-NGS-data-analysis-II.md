@@ -335,7 +335,7 @@ done
 ## Working with SAM/BAM files
 ----
 
-[Samtools](http://www.htslib.org/doc/samtools.html) is an extensive software suite that provides tools for working with alignment files. We will use Samtools to explore our alignments, and demonstrate some common tasks that can be performed using this software. While our alignments were generated from RNA-seq reads, the samtools usage examples below will be appliciable to analysis of any NGS data type. As we mentioned previously Samtools is a software suite, meaning there are many commands that each accept different arguments and flags to perform an operation on an alignment file. Lets have a look at the commmands available.
+[Samtools](http://www.htslib.org/doc/samtools.html) is an extensive software suite that provides tools for working with alignment files. We will use Samtools to explore our alignments, and demonstrate some common tasks that can be performed using this software. While our alignments were generated from RNA-seq reads, the samtools usage examples below will be applicable to analysis of any NGS data type. As we mentioned previously Samtools is a software suite, meaning there are many commands that each accept different arguments and flags to perform an operation on an alignment file. Lets have a look at the commands available.
 
 ```bash
 # View the commands available in the Samtools software suite
@@ -344,7 +344,7 @@ samtools --help
 
 **Samtools viewing**
 
-You can see that all of the available commands are orgnaized into categories for indexing, editing, file operations, statistics, and viewing. Lets start with the viewing function by using samtools with the `view` command and `-H` flag to view the header line of a SAM file.
+You can see that all of the available commands are organized into categories for indexing, editing, file operations, statistics, and viewing. Lets start with the viewing function by using samtools with the `view` command and `-H` flag to view the header line of a SAM file.
 
 ```bash
 samtools view -H SRR1039508.Aligned.out.sam  | head
@@ -414,7 +414,7 @@ The figure below shows some example alignments for paired-end mouse RNA-seq data
 	width="95%" height="95%" />
 </p>
 
-Note how the alignments pile up over the exons, which makes sense since these are RNA-seq data where only the transcriptome was sequenced. In these data we expect to see gaps that span the intronic regions. If we had not used a gapped aligner such as STAR, we would have failed to generate many of these alignments. If these data were whole genome assembly we would expectmore even coverage of most locations in the genome. 
+Note how the alignments pile up over the exons, which makes sense since these are RNA-seq data where only the transcriptome was sequenced. In these data we expect to see gaps that span the intronic regions. If we had not used a gapped aligner such as STAR, we would have failed to generate many of these alignments. If these data were whole genome assembly we would expect more even coverage of most locations in the genome. 
 
 IGV supports a wide-range of genomic file formats that contain data ranging from simple genomic regions, to complex alignments and signal tracks. File types supported by IGV include:  
 * .BAM - alignments  
@@ -423,7 +423,7 @@ IGV supports a wide-range of genomic file formats that contain data ranging from
 * .BED - genomic regions   
 * .BIGWIG - signal tracks
 
-We will cover the utiliazation of some of the other file types in another lesson, but the range of file formats supported by IGV means it is able to facilitate exploration and visualization of virtually all types of genomics data generated from diverse experimental procedures, for example:  
+We will cover the utilization of some of the other file types in another lesson, but the range of file formats supported by IGV means it is able to facilitate exploration and visualization of virtually all types of genomics data generated from diverse experimental procedures, for example:  
 
 **Reference genomes and annotations**
 The IGV server also hosts a number of reference genomes and annotations, meaning you do not need to load your own genome from a file for many model organisms. You can view the list of hosted genomes on their website [here](http://software.broadinstitute.org/software/igv/Genomes). IGV also provide access to data from large consortia-scale projects such as [*ENCODE*](https://www.encodeproject.org/), [*1000 Genomes*](https://www.internationalgenome.org/home), and [*The Cancer Genome Atlas (TCGA)*](https://www.cancer.gov/about-nci/organization/ccg/research/structural-genomics/tcga).
@@ -451,7 +451,7 @@ Some of the main UI features include:
 
 * **Zoom bar** - Zoom in and out of the currently shown region
 
-* **Schematic of currently loaded chromosome or contig** - Red box indicates location of the region you are currently viewing. Full width of current region is shown below, with a scale bar indicating specific coordinates. Both can be used to navigate directly.
+* **Schematic of currently loaded chromosome or contig** - A red box indicates location of the region you are currently viewing. Full width of current region is shown below, with a scale bar indicating specific coordinates. Both can be used to navigate directly.
 
 * **Gene track** - Shows gene included in currently loaded annotation (Refseq genes in example). Right click track for additional formatting options. Features included in annotation are indicated by thickness (introns, exons, UTRs). Gene orientation is shown with arrows pointing right for FWD/+, left for REV/- strand.
 
@@ -534,7 +534,7 @@ Other genome browsers do exist and have various strengths/weaknesses. For exampl
 
 -----
 
-If you got lost, or didn't have enough time to finish the commands before we move to the next session you can copy the files needed for the next step with the following command.
+If you got lost, or didn't have enough time to finish the commands before we move to the next session, you can copy the files needed for the next step with the following command.
 
 ```bash
 # go to your scratch directory (e.g. $FOB)
