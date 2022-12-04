@@ -12,7 +12,7 @@ Importantly, the Shell allows us to do each of these in the context of Bioinform
 
 ## Why learn to use a Shell?  
 ------
-GUIs enable you to interact with your files and software in very limited ways by clicking buttons or selecting check boxes that correspond to choices you can make about how the software can run. Due to the design of the GUI the options available for any peice of software are limited to the most popular options, but these options do not represent the full potential of the software used by the GUI wrapper. These options may not be optimal for the dataset that you are working with, and the software might not be the latest version. When this happens you will run into what we call "bugs" where the GUI crashes or times out before the data are processed. In this case you may be able to update your GUI, but often you're left looking desparately for another tool that will do something similar. 
+GUIs enable you to interact with your files and software in very limited ways by clicking buttons or selecting check boxes that correspond to choices you can make about how the software can run. Due to the design of the GUI the options available for any piece of software are limited to the most popular options, but these options do not represent the full potential of the software used by the GUI wrapper. These options may not be optimal for the dataset that you are working with, and the software might not be the latest version. When this happens you will run into what we call "bugs" where the GUI crashes or times out before the data are processed. In this case you may be able to update your GUI, but often you're left looking desperately for another tool that will do something similar. 
 
 
 <table>
@@ -27,13 +27,13 @@ GUIs enable you to interact with your files and software in very limited ways by
 
 </td></tr> </table>
 
-In the terminal environment it is easy to update the software package if it crashes or times out on while processing your data. You also have access to the full suite of possibiliites intended by the software developer by interacting with the software through the CLI. This enables more flexibility in your analysis and the ability to leverage options that are optimal for processing your dataset. Lastly when the software does crash there is generally an error message or a log file explaining what process caused the crash. Mitigating these issues requires a little "google-fu" on your part combing through stack exchange messages where previous users of the same software got the same error message and have implemented various fixes
+In the terminal environment it is easy to update the software package if it crashes or times out on while processing your data. You also have access to the full suite of possibilities intended by the software developer by interacting with the software through the CLI. This enables more flexibility in your analysis and the ability to leverage options that are optimal for processing your dataset. Lastly when the software does crash there is generally an error message or a log file explaining what process caused the crash. Mitigating these issues requires a little "google-fu" on your part combing through stack exchange messages where previous users of the same software got the same error message and have implemented various fixes
 
 ## The Bash shell
 -------
 ### The absolute basics
 
-There are different types of Unix shells, however the most popular is Bash (the *Bourne Again Shell*), which is also the most common on Linux sysetms. Since the majority of participants will be using the Bash shell, and this is the default shell used on Dartmouth's high performance computing system (which we will be using), this lesson will introduce the Shell through using the Bash shell, however most, if not all, content should be transferable to other Unix shells.
+There are different types of Unix shells, however the most popular is Bash (the *Bourne Again Shell*), which is also the most common on Linux systems. Since the majority of participants will be using the Bash shell, and this is the default shell used on Dartmouth's high performance computing system (which we will be using), this lesson will introduce the Shell through using the Bash shell, however most, if not all, content should be transferable to other Unix shells.
 
 > Use the Cheat Sheet in the GitHub repo to help you learn commands and available options.
 
@@ -68,7 +68,7 @@ ls
 
 ### Paths, where is your data stored
 
-A path is the address that indicates where your data are stored. If I told you that my data was stored in a directory (folder) called `data` , you would understand that you should search for a folder on my computer called `data`. In some cases there may be multiple directories called data and we would need to distinguish which directory contains the data of interest. In the image below there is a directory (folder) called `data_analysis`, which contains two directories called `project-1` and `project-2`. Each project directory contains another directory called `data`.
+A path is the address that indicates where your data are stored. If I told you that my data was stored in a directory (folder) called `data`, you would understand that you should search for a folder on my computer called `data`. In some cases there may be multiple directories called data and we would need to distinguish which directory contains the data of interest. In the image below there is a directory (folder) called `data_analysis`, which contains two directories called `project-1` and `project-2`. Each project directory contains another directory called `data`.
 
 <p align="center">
   <img src="../figures/directoryStructure.png" height="40%" width="40%"/>
@@ -86,7 +86,7 @@ pwd
 
 ### Absolute vs. relative paths
 
-The command `pwd` returns the **absolute path** to your current working directory, the list of all directories and subdirectories to the get from the current directory to the root or home directory. You can see that absolute paths can get long and unweildy, especially if you have very detailed or long directory names. 
+The command `pwd` returns the **absolute path** to your current working directory, the list of all directories and subdirectories to the get from the current directory to the root or home directory. You can see that absolute paths can get long and unwieldy, especially if you have very detailed or long directory names. 
 
 One "shortcut" that makes navigating the command line a bit easier is using a **relative path**. A **relative path** uses the directory structure (which we can see in our absolute path returned by the command `pwd`) to move up or down through directories using shortcuts. One very common shortcut is `..` which translates to the directory one level "above" your current directory. 
 
@@ -115,7 +115,7 @@ cd ~
 ## Log on to discovery cluster
 -------
 
-Most NGS data analysis will require a lot of memory and computing power, more than most laptops can handle efficiently. For these analyses leverging a high performance compute (HPC) cluster is often necessary. A cluster is a collection of compute resources, called nodes, that are accessed remotely through your local machine. You can leverage these resources for both data storage and data processing. These compute resources work together as a single system.
+Most NGS data analysis will require a lot of memory and computing power, more than most laptops can handle efficiently. For these analyses, using a high performance compute (HPC) cluster is often necessary. A cluster is a collection of compute resources, called nodes, that are accessed remotely through your local machine. You can leverage these resources for both data storage and data processing. These compute resources work together as a single system.
 
 The discovery cluster is a resource hosted by Dartmouth's Research Computing team. Let's log onto the discovery cluster now. We will use a secure shell command `ssh` to log onto the discovery cluster (if you are not on campus you will need to be on the VPN network to log on to the cluster).
 
@@ -152,7 +152,7 @@ The command line *environment* describes a collection of variables that have bee
 env
 ```
 
-One important environment variable is `$HOME`, which contains the path to your home directory. You can print the defininition of a variable with the `echo` command, the preceeding `$` indicates you're referencing a variable. For example:
+One important environment variable is `$HOME`, which contains the path to your home directory. You can print the definition of a variable with the `echo` command, the preceding `$` indicates you're referencing a variable. For example:
 
 ```bash
 echo $HOME
@@ -179,7 +179,7 @@ LIST="ls -lah"
 $LIST
 ```
 
-Variables created during a remote session will not persist between sessions, unless the variable is saved an *environment file*. These are a set of files that are executed everytime you start a new bash session. These files are typically hidden, so we need to use `ls` with the `-a` flag to see them. The `.bash_profile` is an example of an environment file, we can view the contents of this file with the `cat` command.
+Variables created during a remote session will not persist between sessions, unless the variable is saved an *environment file*. These are a set of files that are executed every time you start a new bash session. These files are typically hidden, so we need to use `ls` with the `-a` flag to see them. The `.bash_profile` is an example of an environment file, we can view the contents of this file with the `cat` command.
 
 ```bash
 # navigate to your home directory
@@ -235,7 +235,7 @@ mkdir -p sms/fundamentals_of_bioinformatics
 # Change to the newly-created directory.
 cd sms/fundamentals_of_bioinformatics
 
-# Creat a variable so we can get here quickly 
+# Create a variable so we can get here quickly 
 FOB="/dartfs-hpc/scratch/sms/fundamentals_of_bioinformatics"
 
 ###############
@@ -255,13 +255,13 @@ As expected, the new directory that you created is empty. Lets copy a file from 
 ```bash
 
 # Copy the file from the scratch drive to the fundamentals_of_bioinformatics directory you just created
-cp /dartfs-hpc/scratch/FOB/all_counts.txt $FOB
+cp /dartfs-hpc/scratch/fund_of_bioinfo/all_counts.txt $FOB
 
 ```
 
 ### Viewing the contents of files
 
-The shell provides us with commands to view the contents of files in define ways. The `cat` command for example (which stands for for concatenate) will print the entire contents of a file to the terminal. This can be useful for smaller files, but as you will see with larger files can quickly fill the terminal with more lines of data than it can display.
+The shell provides us with commands to view the contents of files in define ways. The `cat` command for example (which stands for concatenate) will print the entire contents of a file to the terminal. This can be useful for smaller files, but as you will see with larger files can quickly fill the terminal with more lines of data than it can display.
 
 ```bash
 cat all_counts.txt
@@ -269,7 +269,7 @@ cat all_counts.txt
 
 When working with larger files, which is common in bioinformatics, you may not wish to look at a portion of a file. Other commands exist that allow you to explore file contents with more control.
 - `more` shows you as much of the file as can be shown in the size of the terminal screen you have open, and you can continue to "scroll" through the rest of the file by using the space bar  
-- `less` is a similar command to `more`, and has advantages such as not persiting in the terminal, and being searchable
+- `less` is a similar command to `more`, and has advantages such as not persisting in the terminal, and being searchable
 - `head` will print the first 10 lines by default, but this number can be controlled with the `-n` option
 - `tail` will print the final 10 lines of a file, and can also be controlled with the `-n` option
 
@@ -377,7 +377,7 @@ X* | 0 or more repetitions of X
 X+ | 1 or more repetitions of X
 X? | 0 or 1 instances of X
 
-Now let's use some of these regular expressions in a `grep` command  to see their utility. Let's use regular expressions to see how many genes have zero reads counted for the first four samples. The flag `-P` indicates that we will be using perl-style regular expressions in the pattern we are searching for, you can use `grep --h` to learn more about available flags for the `grep` command. 
+Now let's use some of these regular expressions in a `grep` command  to see their utility. Let's use regular expressions to see how many genes have zero reads counted for the first four samples. The flag `-P` indicates that we will be using Perl-style regular expressions in the pattern we are searching for, you can use `grep --h` to learn more about available flags for the `grep` command. 
 
 ```bash
 # Count the number of genes with no reads in the first four samples
