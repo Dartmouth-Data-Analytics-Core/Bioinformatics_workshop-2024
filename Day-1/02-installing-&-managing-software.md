@@ -61,11 +61,11 @@ To run software on a Linux command line, the software must both exist, and be ac
 
 
 ```shell
-# Check which directory we're in
-pwd
+# List the contents of the current directory
+ls
 
-#See where pwd software is installed
-which pwd
+#See where ls software is installed
+which ls
 
 #Save your path to retrieve later
 PATH_BACKUP=$PATH
@@ -75,13 +75,11 @@ PATH=
 echo $PATH
 
 #Try these commands
-pwd
 ls
 cat all_counts.txt
-#Note that the software is no longer accessible "pwd: No such file"
+#Note that the software is no longer accessible "ls: No such file"
 
 #It's possible to call them directly, as they all exist
-/usr/bin/pwd
 /usr/bin/ls
 /usr/bin/cat all_counts.txt
 
