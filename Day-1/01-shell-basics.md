@@ -240,7 +240,7 @@ FOB="/dartfs-hpc/scratch/sms/fundamentals_of_bioinformatics"
 
 ###############
 # Add variable definition to .bash_profile
-nano ~.bash_profile
+nano ~/.bash_profile
 # copy and paste the definition above with YOUR INITIALS
 ###############
 
