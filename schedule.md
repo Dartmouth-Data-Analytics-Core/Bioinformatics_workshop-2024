@@ -12,31 +12,31 @@ We have designed the schedule so that breaks are essentially built into the brea
 ---
 
 ## Day1
+
 - **12:00-12:30 - Intro to workshop.**
-- **12:30-1:00 - Intro. to bioinformatics (lecture, Dr. Owen Wilkins)**
-- **1:05-2:00 - The UNIX shell/Bash**
-- **2:05-2:55 - Intro. to next-generation sequencing (lecture, Dr. Fred Kolling)**
-- **3:00-4:00 - Intro-to-NGS-data-analysis-I (FASTQ files)**  
-- **4:00-5:00 - Intro-to-NGS-data-analysis-II (BAM/SAM/CRAM files)**
+- **12:30-1:30 - Intro. to bioinformatics (lecture, Dr. Owen Wilkins)**
+- **1:50-2:40 - The UNIX shell/Bash**
+- **2:50-3:30 - Installing and managing software**
+- **4:00-5:00 - Intro. to next-generation sequencing (lecture, Dr. Fred Kolling)**  
 
 ---
 
 ## Day2
 
 - **12:00-12:10 - Day 1 recap & questions**
-- **12:10-1:00 - Intro-to-NGS-data-analysis-III (BED/BigWig/count files)**  
-- **1:00-2:00 - Introduction to IGV**
-- **2.15-3:00 - Installing and managing software**  
-- **3:10-5:00 - Basics of R programming**
+- **12:10-1:10 - Intro. to NGS data analysis-I (FASTQ files)**  
+- **1:25-2:45 - Intro. to NGS data analysis-II (BAM/SAM files)**
+- **3:00-3:45 - Intro. to NGS data analysis-III (counts/VCF files)**  
+- **4:00-5:00 - Intro. to NGS data analysis-IV (Bed/WIG files)**
 
+- **Homework - Basics of R programming, optional lesson review Thursday December 8, 2-3PM**
 ---
 
 ## Day3
 
 - **12:00-12:10 - Day 2 recap & questions**
-- **12:10-1:00 - Genomics with R & Bioconductor I** (working with genomic regions)
-- **1:10-2:10 - Genomics with R & Bioconductor II** (genome annotation)
-- **2:15-3:10 - Genomics with R & Bioconductor III** (sequence analysis & reference genomes)
-- **3:15-4:00 - Introduction to statistical inference for bioinformatics I**
-- **4:00-4:50 - Introduction to statistical inference for bioinformatics II**
+- **12:10-1:10 - Genomics with R & Bioconductor I** (working with genomic regions)
+- **1:25-2:25 - Genomics with R & Bioconductor II** (genome annotation)
+- **2:40-3:30 - Introduction to statistical inference for bioinformatics I**
+- **3:40-4:50 - Introduction to statistical inference for bioinformatics II**
 - **4:50-5:00 - Wrap-up & closing remarks**
