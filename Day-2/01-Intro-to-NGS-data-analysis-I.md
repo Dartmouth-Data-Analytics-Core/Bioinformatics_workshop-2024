@@ -7,7 +7,7 @@
 
 ```bash
 #log on to a compute node if not already on one:
-srun --nodes=1 --ntasks-per-node=1 --mem-per-cpu=4GB --cpus-per-task=1 --time=08:00:00 --partition=standard  --pty /bin/bash
+srun --nodes=1 --ntasks-per-node=1 --mem-per-cpu=4GB --cpus-per-task=1 --time=08:00:00 --partition=preempt1 --account=DAC --pty /bin/bash
 source ~/.bash_profile
 
 # activate the conda environment
