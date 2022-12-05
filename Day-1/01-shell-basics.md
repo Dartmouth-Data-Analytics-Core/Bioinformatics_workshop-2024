@@ -137,7 +137,7 @@ netID@discovery.dartmouth.edu's password:
 When you log into Discovery using SSH, your session will begin on a computer known as the head node.  This is a computer that sits atop the computing cluster and manages the activities of the compute nodes. The head node should never be used for large-scale computational tasks, instead we will request a compute node to work on by running the `srun` command and specifying the required resources:
 
 ```bash
-srun --nodes=1 --ntasks-per-node=1 --mem-per-cpu=4GB --cpus-per-task=1 --time=08:00:00 --partition=preempt1  --pty /bin/bash
+srun --nodes=1 --ntasks-per-node=1 --mem-per-cpu=4GB --cpus-per-task=1 --time=08:00:00 --partition=preempt1 --account=DAC --pty /bin/bash
 ```
 
 When you are finished programming you can exit the compute node with the `exit` command. Don't run this command now as we are aren't finished programming for the day! 
