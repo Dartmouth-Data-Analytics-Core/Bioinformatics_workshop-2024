@@ -1,5 +1,24 @@
 # Working with NGS data Part II
 
+```bash
+# IF YOU'RE JUST LOGGING ONTO DISCOVERY
+
+#log on to a compute node if not already on one:
+srun --nodes=1 --ntasks-per-node=1 --mem-per-cpu=4GB --cpus-per-task=1 --time=08:00:00 --partition=preempt1 --account=DAC --pty /bin/bash
+source ~/.bash_profile
+
+# activate the conda environment
+conda activate bioinfo
+
+#create a variable for the source directory 
+SOURCE="/dartfs-hpc/scratch/fund_of_bioinfo"
+
+# IF YOU DIDN'T HAVE TIME TO FINISH TRIMMING TASK, COPY THOSE FILES NOW
+mkdir -p $FOB/trim
+cp $SOURCE/trim/* $FOB/trim/
+
+```
+
 ## Alignment files (BAM/SAM/CRAM formats)
 
 ### Learning objectives:
@@ -12,10 +31,6 @@ Make a new directory to work in:
 ```bash
 # go to your home directory for the workshop
 cd $FOB
-
-# IF YOU DIDN'T HAVE TIME TO FINISH TRIMMING COPY THOSE FILES NOW
-mkdir -p $FOB/trim
-cp $SOURCE/trim/* $FOB/trim/
 
 # make the directory and cd into it
 mkdir -p $FOB/aligned
