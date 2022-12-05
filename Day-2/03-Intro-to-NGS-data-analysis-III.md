@@ -24,19 +24,17 @@ After generating read alignments to your genome of interest, there are several d
 
 If you got lost or missed the last session you can copy all of the files we built in the alignment section with the following commands.
 ```bash
+# IF YOU'RE JUST LOGGING ONTO DISCOVERY
 
 #log on to a compute node if not already on one:
-srun --nodes=1 --ntasks-per-node=1 --mem-per-cpu=4GB --cpus-per-task=1 --time=08:00:00 --partition=standard  --pty /bin/bash
+srun --nodes=1 --ntasks-per-node=1 --mem-per-cpu=4GB --cpus-per-task=1 --time=08:00:00 --partition=preempt1 --account=DAC --pty /bin/bash
+source ~/.bash_profile
 
-#establish a variable for the source directory if you haven't already
+# activate the conda environment
+conda activate bioinfo
+
+#create a variable for the source directory 
 SOURCE="/dartfs-hpc/scratch/fund_of_bioinfo"
-
-#establish a variable for your home directory if you haven't already 
-# *** REPLACE YOUR_INITIALS with your actual initials ***
-FOB="/dartfs-hpc/scratch/YOUR_INTIALS/fundamentals_of_bioinformatics/"
-
-# navigate to your scratch directory
-cd $FOB
 
 # If you didn't have time to finish aligning copy these files now
 mkdir -p $FOB/aligned
