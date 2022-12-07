@@ -7,7 +7,7 @@ After generating read alignments to your genome of interest, there are several d
 - Often referred to as read counting, several NGS applications require us to count reads overlapping specific features to extract insights. For example, in RNA-seq, the number of reads overlapping each gene is used to infer expression level.
 
 **Variant Calling:**
-- In WGS/WES experiments, we are usually interested in identifying genetic variants that are present in a sequenced sample, but not in teh reference genome that the sample was aligned to.
+- In WGS/WES experiments, we are usually interested in identifying genetic variants that are present in a sequenced sample, but not in the reference genome that the sample was aligned to.
 
 ---
 
@@ -44,7 +44,7 @@ cp $SOURCE/aligned/* $FOB/aligned/
 
 ## Part 1: Read count quantification
 
-For most downstream analyses in RNA-seq, especially differential expression, we want to know how many reads aligned to a specific feature, as this tells us about the features's expression level, so we can compare expression between samples. Inherently, this means that we want to make these data count-based, so that we can use statistical models to compare these counts between experimental conditions of interest.
+For most downstream analyses in RNA-seq, especially differential expression, we want to know how many reads aligned to a specific feature, as this tells us about the feature's expression level, so we can compare expression between samples. Inherently, this means that we want to make these data count-based, so that we can use statistical models to compare these counts between experimental conditions of interest.
 
 <p align="center">
 <img src="../figures/genoic-content.png" title="xxxx" alt="context"
@@ -105,7 +105,7 @@ ls $FOB/aligned/*.Aligned.sortedByCoord.out.bam | while read x; do
   # save the file name
   sample=`echo "$x"`
   # get everything in file name before "/" (to remove '$FOB/alignment/')
-  sample=`echo "$sample" | cut -d"/" -f6`
+  sample=`echo "$sample" | cut -d"/" -f7`
   # get everything in file name before "." e.g. "SRR1039508"
   sample=`echo "$sample" | cut -d"." -f1`
   echo processing "$sample"
@@ -123,10 +123,10 @@ done
 
 #### Sources of variation in RNAseq counts data
 
-In an RNAseq experiemnt like this one, the ultimate goal is to find out if there are genes whose expression level varies by conditions in your samples. The output from HTseq-count contains raw gene counts which cannot be compared within or between samples. This is due to many sources of variation within the counts that should be accounted for with normalization before counts are compared.
+In an RNAseq experiment like this one, the ultimate goal is to find out if there are genes whose expression level varies by conditions in your samples. The output from HTseq-count contains raw gene counts which cannot be compared within or between samples. This is due to many sources of variation within the counts that should be accounted for with normalization before counts are compared.
 
 **Gene length:**
-For comparisons within a sample it is important to normalize for gene length. If gene X is 1000bp long and gene Y is 2000bp long, we would expect that gene Y will recruit twice the reads in the dataset, purely due to the extra bp that represent the gene. If we didn't normalize for gene length and compared raw counts we might incorrectly assume that gene Y was expressed twice as much as gene X. This type of normalization is not needed for single end datasets, as reads are only mapped to the 3' end of the gene and counts will not be affected by genen length. 
+For comparisons within a sample it is important to normalize for gene length. If gene X is 1000bp long and gene Y is 2000bp long, we would expect that gene Y will recruit twice the reads in the dataset, purely due to the extra bp that represent the gene. If we didn't normalize for gene length and compared raw counts we might incorrectly assume that gene Y was expressed twice as much as gene X. This type of normalization is not needed for single end datasets, as reads are only mapped to the 3' end of the gene and counts will not be affected by gene length. 
 
 **Library size:**
 For comparisons between samples it is important to normalize for library size. If sample A has 10 million reads and sample B has 30 million reads and we want to compare the expression of gene X between samples we should first normalize for sequencing depth, else we may incorrectly assume that the expression of gene X in sample B is three times higher than in sample A. 
@@ -272,7 +272,7 @@ Next we need to navigate to the position of the alternate allele we want to veri
 	width="70%" height="70%" />
 </p>
 
-Now lets have a look at one of the lower confidence reads we saw at the top of the VCF file, position 274210. You can see that this region represents an intron in the *C20orf96* gene, and that though all reads carry the SNP ther are only 2 reads mapping here. This probably doesn't represent a SNP that is affecting the genotype of the cell. 
+Now lets have a look at one of the lower confidence reads we saw at the top of the VCF file, position 274210. You can see that this region represents an intron in the *C20orf96* gene, and that though all reads carry the SNP there are only 2 reads mapping here. This probably doesn't represent a SNP that is affecting the genotype of the cell. 
 
 <p align="center">
 <img src="../figures/IGV_vcfLowConfidence.png" title="" alt="context"
@@ -280,14 +280,14 @@ Now lets have a look at one of the lower confidence reads we saw at the top of t
 </p>
 
 
-Other cannonical applications of VCF data might include:
-- Confriming all ALT reads are not strand-specific
+Other canonical applications of VCF data might include:
+- Confirming all ALT reads are not strand-specific
 - Mapping qualities and base qualities are consistent across reads representing the REF & ALT allele
 - Variants are not called only at ends of reads
 
 -----
 
-It isn't exactly surprising that there aren't many SNPs with high frequency and high covereage, these RNAseq data are from untreated airway smooth muscle donor cell lines. However the same analysis procedure applied to a cancer data or population genetics might be quite informative. The example VCF file (`Day-2/data/1000G.chr20.sub.vcf.gz`) contains all called variants across subjects in the 1000 Genomes project. All variants for chromosome 20 are summarized at the top of the variant track. This VCF file also includes subject-specific genotypes, represented here using the colors indicated in the figure below.
+It isn't exactly surprising that there aren't many SNPs with high frequency and high coverage, these RNAseq data are from untreated airway smooth muscle donor cell lines. However the same analysis procedure applied to a cancer data or population genetics might be quite informative. The example VCF file (`Day-2/data/1000G.chr20.sub.vcf.gz`) contains all called variants across subjects in the 1000 Genomes project. All variants for chromosome 20 are summarized at the top of the variant track. This VCF file also includes subject-specific genotypes, represented here using the colors indicated in the figure below.
 
 ![](../figures/igv-09.png)
 
