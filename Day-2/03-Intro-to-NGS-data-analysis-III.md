@@ -11,16 +11,16 @@ After generating read alignments to your genome of interest, there are several d
 
 ---
 
-## Learning Objectives: 
-- Understand the concept of read quantification/counting and the downstream applications this is useful for 
+## Learning Objectives:
+- Understand the concept of read quantification/counting and the downstream applications this is useful for
 - Learn how to perform a simple read count quantification using [htseq-count](https://htseq.readthedocs.io/en/release_0.11.1/count.html)
-- Understand why raw read counts must undergo normalization before making any inferences on the data 
-- Understand the basic premise of variant calling from NGS read alignments 
-- Learn how to generate putative variant calls with [FreeBayes](https://github.com/freebayes/freebayes) and explore the results using IGV 
+- Understand why raw read counts must undergo normalization before making any inferences on the data
+- Understand the basic premise of variant calling from NGS read alignments
+- Learn how to generate putative variant calls with [FreeBayes](https://github.com/freebayes/freebayes) and explore the results using IGV
 
 ---
 
-## Lesson setup: 
+## Lesson setup:
 
 If you got lost or missed the last session you can copy all of the files we built in the alignment section with the following commands.
 ```bash
@@ -33,7 +33,7 @@ source ~/.bash_profile
 # activate the conda environment
 conda activate bioinfo
 
-#create a variable for the source directory 
+#create a variable for the source directory
 SOURCE="/dartfs-hpc/scratch/fund_of_bioinfo"
 
 # If you didn't have time to finish aligning copy these files now
@@ -126,13 +126,13 @@ done
 In an RNAseq experiment like this one, the ultimate goal is to find out if there are genes whose expression level varies by conditions in your samples. The output from HTseq-count contains raw gene counts which cannot be compared within or between samples. This is due to many sources of variation within the counts that should be accounted for with normalization before counts are compared.
 
 **Gene length:**
-For comparisons within a sample it is important to normalize for gene length. If gene X is 1000bp long and gene Y is 2000bp long, we would expect that gene Y will recruit twice the reads in the dataset, purely due to the extra bp that represent the gene. If we didn't normalize for gene length and compared raw counts we might incorrectly assume that gene Y was expressed twice as much as gene X. This type of normalization is not needed for single end datasets, as reads are only mapped to the 3' end of the gene and counts will not be affected by gene length. 
+For comparisons within a sample it is important to normalize for gene length. If gene X is 1000bp long and gene Y is 2000bp long, we would expect that gene Y will recruit twice the reads in the dataset, purely due to the extra bp that represent the gene. If we didn't normalize for gene length and compared raw counts we might incorrectly assume that gene Y was expressed twice as much as gene X. This type of normalization is not needed for single end datasets, as reads are only mapped to the 3' end of the gene and counts will not be affected by gene length.
 
 **Library size:**
-For comparisons between samples it is important to normalize for library size. If sample A has 10 million reads and sample B has 30 million reads and we want to compare the expression of gene X between samples we should first normalize for sequencing depth, else we may incorrectly assume that the expression of gene X in sample B is three times higher than in sample A. 
+For comparisons between samples it is important to normalize for library size. If sample A has 10 million reads and sample B has 30 million reads and we want to compare the expression of gene X between samples we should first normalize for sequencing depth, else we may incorrectly assume that the expression of gene X in sample B is three times higher than in sample A.
 
 **Library composition:**
-The presence of differentially expressed genes between samples causes the number of reads for other genes in those samples to be skewed. For example, lets assume two samples 1 & 2 and genes X, Y, & Z. Each sample has a library size of 10 million reads but gene Y is differentially expressed between the two samples, with much higher expression in sample 1. The high expression of gene Y in sample 1 leaves fewer reads available to map to genes X and Z, resulting in a low read counts in sample 1 relative to sample 2. The cause of the difference in expression levels of genes X and Z is the increased recruitment of reads to gene Y in sample 1. 
+The presence of differentially expressed genes between samples causes the number of reads for other genes in those samples to be skewed. For example, lets assume two samples 1 & 2 and genes X, Y, & Z. Each sample has a library size of 10 million reads but gene Y is differentially expressed between the two samples, with much higher expression in sample 1. The high expression of gene Y in sample 1 leaves fewer reads available to map to genes X and Z, resulting in a low read counts in sample 1 relative to sample 2. The cause of the difference in expression levels of genes X and Z is the increased recruitment of reads to gene Y in sample 1.
 
 <p align="center">
 <img src="../figures/library_composition.png" title="xxxx" alt="context"
@@ -174,7 +174,7 @@ Here we will demonstrate variant calling with [FreeBayes](https://github.com/fre
 Specifies the fasta file to use as a reference.
 
 **Alignment file (`-b`):**  
-Specifies the alignment file to use as input. 
+Specifies the alignment file to use as input.
 
 **Output file (`-v`):**
 Specifies the name of the VCF output file.
@@ -191,15 +191,15 @@ cd $FOB
 mkdir -p  $FOB/vars
 cd $FOB/vars
 
-#check the naming syntax of the reference file 
+#check the naming syntax of the reference file
 grep ">" $SOURCE/refs/Homo_sapiens.GRCh38.dna.primary_assembly.chr20.fa
 
 # call variants on chromosome 20
-freebayes \
+$SOURCE/software/freebayes \
 -f $SOURCE/refs/Homo_sapiens.GRCh38.dna.primary_assembly.chr20.fa \
 -r 20 \
 -v $FOB/vars/SRR1039508.vcf \
--b $FOB/aligned/SRR1039508.Aligned.sortedByCoord.out.bam 
+-b $FOB/aligned/SRR1039508.Aligned.sortedByCoord.out.bam
 ```
 The standard file format output by variant callers is `Variant Call Format`, or `VCF`, which is a tabular format containing the genomic location of each variant and the level of evidence for it in each sample, as well as a header describing the construction of the file.
 
@@ -216,18 +216,18 @@ wc -l SRR1039508.vcf
 # take a look at the header lines - lines all start with #
 grep "^#" SRR1039508.vcf
 
-# take a look at some of the variant calls 
+# take a look at some of the variant calls
 grep -v "^#" SRR1039508.vcf|head -n3
 ```
-Of note are two fields of information that are particularly useful: 
+Of note are two fields of information that are particularly useful:
 
-**AF** 
-indicates the alternate allele frequency in the dataset and can take on a value of 0, 0.5, or 1. The 
+**AF**
+indicates the alternate allele frequency in the dataset and can take on a value of 0, 0.5, or 1. The
 
 **DP**
 indicates the read depth at that site
 
-You will notice the first three variants that we looked at all have an alternate allele frequency of 1, indicating full penetrance of the SNP, however the depth at each of these sites is between 2-3 reads. This isn't a SNP I would be particularly confident about reporting. Let's look for a SNP that we might have some confidence in by pulling any variant that has an alternate allele frequency of 1 and looking for a depth of more than 100 reads at that site. 
+You will notice the first three variants that we looked at all have an alternate allele frequency of 1, indicating full penetrance of the SNP, however the depth at each of these sites is between 2-3 reads. This isn't a SNP I would be particularly confident about reporting. Let's look for a SNP that we might have some confidence in by pulling any variant that has an alternate allele frequency of 1 and looking for a depth of more than 100 reads at that site.
 
 ```bash
 
@@ -249,7 +249,7 @@ grep -v "^#" SRR1039508.vcf|grep ";AF=1;"|grep "DP=425"|cut -f2
 ```
 
 Using filezilla download the VCF file from your `vars/` directory as well as the BAM file and indexed BAM file from your `aligned/` directory to your local machine and load them both into the IGV.
- 
+
 
 <p align="center">
 <img src="../figures/filezilla.png" title="" alt="context"
@@ -265,14 +265,14 @@ Load the data into IGV using the `File` menu and selecting `Load from File...`, 
 </p>
 
 
-Next we need to navigate to the position of the alternate allele we want to verify, recall this SNP was at position 3668514. Type `chr20:2668514` into the position window and hit enter. This will automatically center the position of interest on your screen. You can see that the alternate allele (G) is present in the *ADDAM33* gene and all but one read at this position carry the SNP, thus it is very unlikely that this SNP is due to a sequencing error. 
+Next we need to navigate to the position of the alternate allele we want to verify, recall this SNP was at position 3668514. Type `chr20:2668514` into the position window and hit enter. This will automatically center the position of interest on your screen. You can see that the alternate allele (G) is present in the *ADDAM33* gene and all but one read at this position carry the SNP, thus it is very unlikely that this SNP is due to a sequencing error.
 
 <p align="center">
 <img src="../figures/IGV_vcfPosition.png" title="" alt="context"
 	width="70%" height="70%" />
 </p>
 
-Now lets have a look at one of the lower confidence reads we saw at the top of the VCF file, position 274210. You can see that this region represents an intron in the *C20orf96* gene, and that though all reads carry the SNP there are only 2 reads mapping here. This probably doesn't represent a SNP that is affecting the genotype of the cell. 
+Now lets have a look at one of the lower confidence reads we saw at the top of the VCF file, position 274210. You can see that this region represents an intron in the *C20orf96* gene, and that though all reads carry the SNP there are only 2 reads mapping here. This probably doesn't represent a SNP that is affecting the genotype of the cell.
 
 <p align="center">
 <img src="../figures/IGV_vcfLowConfidence.png" title="" alt="context"
