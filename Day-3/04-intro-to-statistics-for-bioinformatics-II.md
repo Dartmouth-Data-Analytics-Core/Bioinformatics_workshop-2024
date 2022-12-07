@@ -149,9 +149,9 @@ We address this problem through *multiple testing correction*, which describes a
 
 #### Bonferroni correction
 
-The simplest multiple testing correction method is the *Bonferroni* correction, which seeks to control the family-wise error rate (FWER): *the probability of making at least 1 false positive claim.*
+The simplest multiple testing correction method is the *Bonferroni* correction. 
 
-To control for the FWER, the &alpha; threshold you have chosen for your experiment is divided by the number of tests performed, and any P-value must achieve significance below this threshold to be described as significant. In our example above where we ran 1000 tests at a 5% significance level, the correct alpha would be 0.05/1000 = 5e-5, so any P-value needs to be < 5e-5 to be deemed significant.
+This method adjusts the &alpha; threshold you have chosen for your experiment by dividing by the number of tests performed. Any P-value must achieve significance below this threshold to be described as significant. In our example above where we ran 1000 tests at a 5% significance level, the correct alpha would be 0.05/1000 = 5e-5, so any P-value needs to be < 5e-5 to be deemed significant.
 
 We can demonstrate this by plotting the Bonferroni threshold on the plot for our previous example:
 ```r
@@ -197,7 +197,7 @@ FDR is defined as the proportion of false discoveries among all significant resu
   <img src="../figures/hypo-test-3.png" height="80%" width="80%"/>
 </p>
 
-To control for the FDR, we can use a list of P-values to calculate a *q-value* for each of these P-values in our list. A *q-value* for a specific test is defined as expected proportion of false-positives among all features called as or more extreme than the one in question.
+To control for the FDR, we can use a list of P-values to calculate a *q-value* for each of P-values in our list. A *q-value* for a specific test is defined as expected proportion of false-positives among all features called as or more extreme than the one in question.
 
 For example, if an individual gene for an RNA-seq differential expression analysis has a q-value of 0.01, this means 1% of genes with a lower significance value than this gene will be false-positives.  
 
