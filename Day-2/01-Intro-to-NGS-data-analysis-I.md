@@ -95,6 +95,7 @@ Given the size of these files, if everyone were to copy them to their home direc
 
 ```bash
 # move into your fundamentals_of_bioinformatics directory
+# check that it worked by running the pwd command.  You should be in your own directory on /dartfs-hpc/scratch.
 cd $FOB
 
 # lets keep our data organized and make a folder for these raw fastq files
@@ -341,8 +342,8 @@ Copy to report to your **LOCAL MACHINE** in a new folder and open in a web-brows
 mkdir fund_of_bioinfo/
 cd fund_of_bioinfo/
 
-# use secure copy (scp) to download the files to your local machine - remember to change the netID before you paste this command into the terminal
-scp netID@discovery7.dartmouth.edu:/dartfs-hpc/scratch/NETID/fundamentals_of_bioinformatics/fastqc_results/multiqc_report.html .
+# use secure copy (scp) to download the files to your local machine - remember to change the netID before you to your own, or your initials, and paste this command into the terminal
+scp netID@discovery7.dartmouth.edu:/dartfs-hpc/scratch/NETID/fundamentals_of_bioinformatics/rawQC/multiqc_report.html .
 ```
 
 You can find the MultiQC report run on the complete dataset across all samples in the dataset in the Github repository, under `QC-reports`. Let's open it and explore our QC data. If the `scp` command did not work for you there is a copy of the multiqc report in the Github repo you downloaded under `Day-1/data/multiqc_report.html`.
@@ -402,7 +403,7 @@ cutadapt \
    -o SRR1039508_1.trim.chr20.fastq.gz \
    -p SRR1039508_2.trim.chr20.fastq.gz \
    $FOB/raw/SRR1039508_1.chr20.fastq.gz $FOB/raw/SRR1039508_2.chr20.fastq.gz \
-   -m 1 -q 20 -j 1 > SRR1039508.cutadapt.report
+   -m 1 -q 20 -j 4 > SRR1039508.cutadapt.report
 ```
 
 - `-m` removes reads that are smaller than the minimum threshold
@@ -421,7 +422,7 @@ ls $FOB/raw/*.chr20.fastq.gz | while read x; do \
    # save the file name
    sample=`echo "$x"` 
    # get everything in file name after "/" and before "_" e.g. "SRR1039508"
-   sample=`echo "$sample" | cut -d"/" -f3 | cut -d"_" -f1` 
+   sample=`echo "$sample" | cut -d"/" -f7 | cut -d"_" -f1` 
    echo processing "$sample"
 
    # run cutadapt for each sample 
