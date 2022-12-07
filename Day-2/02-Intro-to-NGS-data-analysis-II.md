@@ -105,13 +105,13 @@ Reference genomes are hosted on a number of different websites and often accompa
 Genome annotations are most commonly distributed using the GTF (Gene transfer format) file format. We will explore this format in more detail later in the lesson, however we can briefly look at an example annotation file for hg38:
 ```bash
 # print head of GTF file
-head $SOURCE/refs/Homo_sapiens.GRCh38.97.gtf
+head $SOURCE/refs/Homo_sapiens.GRCh38.97.chr20.gtf
 
 # print tail of GTF file
-tail $SOURCE/refs/Homo_sapiens.GRCh38.97.gtf
+tail $SOURCE/refs/Homo_sapiens.GRCh38.97.chr20.gtf
 
 # print all lines containing CDK9
-grep "CDK9" $SOURCE/refs/Homo_sapiens.GRCh38.97.gtf
+grep "ESF1" $SOURCE/refs/Homo_sapiens.GRCh38.97.chr20.gtf
 ```
 
 The table below from the [UCSC website](https://genome.ucsc.edu/FAQ/FAQgenes.html#gene) highlights how different genome annotations produced by different annotation pipelines can be with respect to availability of transcript models for human genome build GRCh38/hg38 (as of March 2019).  
@@ -318,7 +318,7 @@ ls $FOB/trim/*_1.trim.chr20.fastq.gz | while read x; do
   # save the file name
   sample=`echo "$x"`
   # get everything in file name before "/" (to remove '$FOB/trim/')
-  sample=`echo "$sample" | cut -d"/" -f6`
+  sample=`echo "$sample" | cut -d"/" -f7`
   # get everything in file name before "_" e.g. "SRR1039508"
   sample=`echo "$sample" | cut -d"_" -f1`
   echo processing "$sample"
@@ -362,45 +362,25 @@ samtools --help
 You can see that all of the available commands are organized into categories for indexing, editing, file operations, statistics, and viewing. Lets start with the viewing function by using samtools with the `view` command and `-H` flag to view the header line of a SAM file.
 
 ```bash
-samtools view -H SRR1039508.Aligned.out.sam  | head
+samtools view -H SRR1039508.Aligned.sortedByCoord.out.bam  | head
 ```
 
 `view` can also be used to print the first few alignments.
 ```bash
-samtools view SRR1039508.Aligned.out.sam | head
+samtools view SRR1039508.Aligned.sortedByCoord.out.bam | head
 ```
 
-A commonly used file operation from this tool suite is the `sort` command to sort SAM/BAM files, as many downstream tools will only accept sorted alignment files as input. Here we are using the `-o` flag to indicate the name of the output file.
-```bash
-samtools sort SRR1039508.Aligned.out.sam -o SRR1039508.Aligned.out.sorted.sam
-```
-
-**Samtools file operations**
-In practice, we can ask programs like STAR to give us indexed and sorted BAM files as output from the alignment, however this is not the case with all aligners (bwa mem does not offer this option) and in these cases you will have to sort and index files after the alignment is complete. Now that we've looked at the alignments, we should convert our SAM to BAM for indexing and downstream analysis.
-```bash
-samtools view -S -b SRR1039508.Aligned.out.sorted.sam > SRR1039508.Aligned.out.sorted.bam
-```
-Take a look at the size difference between the SAM and BAM files you created. 
-```bash
-ls -lah SRR1039508.Aligned.out.sorted*
-```
-
-**Samtools indexing**
-We should also index this BAM, which will create a file with the same name, but the suffix `.bai`. Indexing coordinate sorted compressed(BAM/CRAM) files enables fast retrieval of specific regions of interest with tools like `samtools view`.
-```bash
-samtools index SRR1039508.Aligned.out.sorted.bam
-```
 
 **Samtools statistics**
 Another useful thing we might want to do with our BAM file is to count how many alignments have specific FLAG types (unique alignments, secondary, unmapped, properly paired). We discussed FLAG types above and as a reminder here is a link to an [excellent tool](https://broadinstitute.github.io/picard/explain-flags.html) for decoding FLAG types. Using the `flagstat` command will provide a summary of the alignment types in the file. 
 ```bash
-samtools flagstat SRR1039508.Aligned.out.sorted.bam
+samtools flagstat SRR1039508.Aligned.sortedByCoord.out.bam
 ```
 
 We can modify the `view` command with the `-F` flag to filter out specific types of alignments. For example, you might want to produce a new BAM file with only primary alignments (no secondary alignment), you can filter for only primary alignments with the FLAG 256:
 ```bash
 # use -F option in view to filter out reads that were unmapped
-samtools view -F 256 SRR1039508.Aligned.out.sorted.bam -o SRR1039508.Aligned.out.sorted.primary.bam
+samtools view -F 256 SRR1039508.Aligned.sortedByCoord.out.bam -o SRR1039508.Aligned.out.sorted.primary.bam
 
 
 # check flagstats of new file 
@@ -408,12 +388,13 @@ samtools flagstat SRR1039508.Aligned.out.sorted.primary.bam
 
 # count number of reads in new file and old file
 samtools view -c SRR1039508.Aligned.out.sorted.primary.bam
-samtools view -c SRR1039508.Aligned.out.sorted.bam
+samtools view -c SRR1039508.Aligned.sortedByCoord.out.bam
 
 # count reads with specific flag
 ### Note: using lower case -f retains alignments with flag specified, upper case -F filters out alignments with that flag  
 samtools view -c -f 256 SRR1039508.Aligned.out.sorted.primary.bam
-samtools view -c -f 256 SRR1039508.Aligned.out.sorted.bam
+samtools view -c -f 256 SRR1039508.Aligned.sortedByCoord.out.bam
+
 ```
 
 
