@@ -14,34 +14,6 @@
 
 
 
-
-### Day 1 overview
-
-- Navigating the terminal using bash code
-- Stringing together bash code to make a more complex command
-- Saving complex commands as scripts that can be used later or shared with others
-- Basic NGS file types (FASTQ, BAM, BED/bigWig, VCF) their formats and the types of data that stored in each
-- Programs used to generate and or manipulate NGS file types
-
-### Day 2 overview
-
-- Visualizing NGS data with IGV
-- Introduction to an HPC and how to use it efficiently 
-- Customizing your HPC environment and installing software
-- Introduction to R objects and Functions
-
-### Day 3 overview
-
-- Using R/bioconductor to manipulate genomic data 
-- R objects and classes built for NGS data
-- Software and packages used to manipulate and visualize different types of NGS data
-- Utilizing genomic databases with R/bioconductor
-- Visualization of genomic data with R 
-- Statistical modelling applied to NGS data to pull *meaningful* results out of large datasets
-
-
-
-
 ### Some final take-aways from the workshop:
 - Spend the time (and money) to plan, consult, and practice bioinformatics to generate high quality data that will provide robust inferences 
 - If you are going to do a lot of Bioinformatics, you should get **really** good at the command-line (Bash), otherwise, pre-processing will be slow & painful (the first several times it will be slow and painful)
@@ -53,7 +25,7 @@
 ### How to consolidate your learning: 
 - Re-run the code a week or two after the workshop, as this is a great way to consolidate what you have learned at the command-line
 - Edit the code, run sub-sections, read the `man` pages for commands, etc. to build a solid understanding of how everything works
-- Read manuals for the tools that we used today and try to understand the flags that we choose not to show you as well as the flags that we did explain
+- Read manuals for the tools that we used today and try to understand the flags that we choose not to show you as well as the flags that we did not explain
 - When you get an error (and you will) google it and see what you can find, we learn a lot through community forums, mysterious errors are part of coding
 - Seek out additional resources for learning to use tools that are of interest to you
   - [Software carpentry](https://software-carpentry.org/lessons/)
