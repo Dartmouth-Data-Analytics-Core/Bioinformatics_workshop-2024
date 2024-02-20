@@ -119,7 +119,7 @@ You should see something like `/dartfs-hpc/rc/home/h/netID` displayed in respons
 
 ## Start a new directory
 
-Let's start by making a folder, or directory, to store all of the work you do today. It's often a useful practice to give directories not only meaningful names, for example `230601_YOURINITIALS_rnawrkshp`, (ex. Owen's `230601_omw_rnawrkshp`, Shannon's `230601_sms_rnawrkshp`, Tim's `230601_sullivan_rnawrkshp`). At a glance I could tell that this directory contains data from June 01, 2023 pertaining to an RNAseq workshop. Notice I chose a title with no spaces. The 'space' is a *special character* in UNIX, and special characters need to be *escaped* with the `\` and so `230601_abc_workshp` would look like `230601\ abc\ workshp` with escape characters.
+Let's start by making a folder, or directory, to store all of the work you do today. It's often a useful practice to give directories informative names, for example `230601_YOURINITIALS_rnawrkshp`, (ex. Owen's `230601_omw_rnawrkshp`, Shannon's `230601_sms_rnawrkshp`, Tim's `230601_sullivan_rnawrkshp`). At a glance I could tell that this directory contains data from June 01, 2023 pertaining to an RNAseq workshop. Notice I chose a title with no spaces. The 'space' is a *special character* in UNIX, and special characters need to be *escaped* with the `\` and so `230601_abc_workshp` would look like `230601\ abc\ workshp` with escape characters.
 
 File names with spaces become unwieldy to type out so most programmers will replace spaces with `_`, `.`, or `-` in their filenames to keep everything neat.
 
@@ -128,11 +128,11 @@ File names with spaces become unwieldy to type out so most programmers will repl
 cd /dartfs-hpc/scratch/
 
 # Make the directory.  Replace 'omw' with your own username.
-mkdir 240909_omw_workshp/
+mkdir 240313_sms_workshp/
 
 # Change to the newly-created directory.
 # replace omw with your initials
-cd 240909_omw_workshp
+cd 240313_sms_workshp
 
 # Check your location on the cluster
 pwd
@@ -140,13 +140,16 @@ pwd
 # List the contents of your directory
 ls
 ```
-As expected, the new directory that you created is empty there are no files. Lets copy a file from the `/dartfs-hpc/scratch/` directory we created for this workshop to the directory you just created. This file (`all_counts.txt`) provides raw read counts for an RNA-seq experiment, with genes in rows and samples in columns.
+As expected, the new directory that you created is empty there are no files. Lets copy a file from the resource directory we created for this workshop to the directory you just created. This file (`all_counts.txt`) provides raw read counts for an RNA-seq experiment, with genes in rows and samples in columns.
 
 Below we will use `all_counts.txt` for a number of exercises to familiarize you with standard UNIX commands.
 
 ```bash
-# copy the file from the scratch drive to the rnaseq_workshp directory you just created
-# remember the ./ is shorthand for the directory that you are currently in it might be prudent to run the 'pwd' command before running the 'cp' command so you know where your files will be copied to
+#it is prudent to run the 'pwd' command before running the 'cp' command so you know where your files will be copied to
+pwd
+
+# copy the file from the resource directory to the '240313_sms_workshop' directory you just created
+# remember the ./ is shorthand for the directory that you are currently in
 cp /dartfs/rc/nosnapshots/G/GMBSR_refs/rnawrkshp/counts/all_counts.txt ./
 ```
 
@@ -284,18 +287,25 @@ grep -P "^ENSG[0-9]*\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0$" all_count
 
 ### Customizing your environment
 
-You will notice the prompt in your terminal when you are logged onto discovery starts with the term `(base)` what this is indicating is that the environments loaded in your .bash_profile are the tools that are available for you to use. For this workshop (and for most NGS data processing) you will need to extend the software packages that are available to you.
+You will notice the prompt in your terminal when you are logged onto discovery starts with the term `(base)` what this is indicating is that the environments loaded in your .bash_profile are the tools that are available for you to use. For this workshop (and for most NGS data processing) you will need to extend the software packages that are available to you. The '$PATH' variable indicates the locations on the compute system that should be checked for software packages. Adding the path where software of interest is installed to your `$PATH` variable will extend the tools available to you in that compute session.
 
-We will do this now by loading a new environment with the tool `conda`. We have pre-built this `conda` environment for you such that all of the tools you will need have been loaded into this environment, you should have created this environment with the commands included in the welcome and setup email. Tomorrow we will talk more about how to create your own custom `conda` environment.
+# Check path prior to activating the conda environment
+```bash
+# Check your PATH before activating, note the additional binaries folder
+echo $PATH| tr ":" "\n"
+```
+We will do this now by loading a new environment with the tool `conda`. We have pre-built this `conda` environment for you such that all of the tools you will need have been loaded into this environment.
+
+> You should have checked for access to this environment with the commands included in the welcome and setup email. In the next lesson we will discuss creating your own custom `conda` environment.
 
 # Check this path for activating the conda environment
 ```bash
 # Load conda environment
-conda activate /dartfs-hpc/scratch/rnaseq1/envs/rnaseq1
+conda activate /dartfs/rc/nosnapshots/G/GMBSR_refs/rnawrkshp/envs/bioinfo
 # Check your PATH compared to before activating, note the additional binaries folder
 echo $PATH| tr ":" "\n"
 ```
-This should change the word at the beginning of your prompt from `(base)` to the name of the conda environment that you just loaded `(rnaseq1)`.
+This should change the word at the beginning of your prompt from `(base)` to the name of the conda environment that you just loaded `(bioinfo)`.
 
 > As we move through the subsequent lessons, we will introduce more complex bash commands in order to manipulate common bioinformatics file types. If you are ever confused about what a command does, remember you can always use `man` to check out the manual page (or Google it). It you are confused about how commands are used in conjunction with each other, it can also be helpful to break them down and run parts individually, in order to understand what the constituent parts do.
 
