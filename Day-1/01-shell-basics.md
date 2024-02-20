@@ -284,31 +284,8 @@ grep -P "^ENSG[0-9]*\t0\t0\t0\t0\t" all_counts.txt| wc -l
 # Count the number of genes with no reads expressed in any of the samples
 grep -P "^ENSG[0-9]*\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0$" all_counts.txt| wc -l
 ```
-
-### Customizing your environment
-
-You will notice the prompt in your terminal when you are logged onto discovery starts with the term `(base)` what this is indicating is that the environments loaded in your .bash_profile are the tools that are available for you to use. For this workshop (and for most NGS data processing) you will need to extend the software packages that are available to you. The '$PATH' variable indicates the locations on the compute system that should be checked for software packages. Adding the path where software of interest is installed to your `$PATH` variable will extend the tools available to you in that compute session.
-
-# Check path prior to activating the conda environment
-```bash
-# Check your PATH before activating, note the additional binaries folder
-echo $PATH| tr ":" "\n"
-```
-We will do this now by loading a new environment with the tool `conda`. We have pre-built this `conda` environment for you such that all of the tools you will need have been loaded into this environment.
-
-> You should have checked for access to this environment with the commands included in the welcome and setup email. In the next lesson we will discuss creating your own custom `conda` environment.
-
-# Check this path for activating the conda environment
-```bash
-# Load conda environment
-conda activate /dartfs/rc/nosnapshots/G/GMBSR_refs/rnawrkshp/envs/bioinfo
-# Check your PATH compared to before activating, note the additional binaries folder
-echo $PATH| tr ":" "\n"
-```
-This should change the word at the beginning of your prompt from `(base)` to the name of the conda environment that you just loaded `(bioinfo)`.
-
 > As we move through the subsequent lessons, we will introduce more complex bash commands in order to manipulate common bioinformatics file types. If you are ever confused about what a command does, remember you can always use `man` to check out the manual page (or Google it). It you are confused about how commands are used in conjunction with each other, it can also be helpful to break them down and run parts individually, in order to understand what the constituent parts do.
 
-### Breakout room activities
+### Further learning
 
 - Check out the Bash/Unix cheat sheet links in the GitHub directory, and try out a few other commands on the `all_counts.txt` file. Use the `man` command to learn more about these commands and how they should be used.
