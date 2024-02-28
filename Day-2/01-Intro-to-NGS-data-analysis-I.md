@@ -10,11 +10,11 @@
 srun --nodes=1 --ntasks-per-node=1 --mem-per-cpu=4GB --cpus-per-task=1 --time=08:00:00 --partition=preempt1 --account=DAC --pty /bin/bash
 source ~/.bash_profile
 
-# activate the conda environment
-conda activate bioinfo
+# activate the wokrshop conda environment
+conda activate /dartfs/rc/nosnapshots/G/GMBSR_refs/envs/bioinfo
 
-#create a variable for the source directory 
-SOURCE="/dartfs-hpc/scratch/fund_of_bioinfo"
+#create a variable for the resource directory 
+RESOURCE="/dartfs/rc/nosnapshots/G/GMBSR_refs/fobwrkshp/"
 ```
 
 
@@ -79,11 +79,11 @@ It is critical that the R1 and R2 files have the **same number of records in bot
 
 To demonstrate how FASTQ files can be explored from the command line environment, we will be using an example set of FASTQ files generated in an RNA-seq study of human airway cell line and their reaction to glucocorticoids (described in [Himes *et al*, 2014, *PloS One*](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0099625)).
 
-Raw sequence data was obtained from the [Sequence Read Archive (SRA)](https://www.ncbi.nlm.nih.gov/sra) under project accession [SRP033351](https://www.ncbi.nlm.nih.gov/sra?term=SRP033351), using the [SRA toolkit](https://github.com/ncbi/sra-tools) (SRA). The FASTQ files are stored in `/dartfs-hpc/scratch/fund_of_bioinfo/raw_full_fastq/`. To speed up computations in the workshop, these FASTQ files have been subset to only contain reads that align to chromosome 20.
+Raw sequence data was obtained from the [Sequence Read Archive (SRA)](https://www.ncbi.nlm.nih.gov/sra) under project accession [SRP033351](https://www.ncbi.nlm.nih.gov/sra?term=SRP033351), using the [SRA toolkit](https://github.com/ncbi/sra-tools) (SRA). The FASTQ files are stored in `/dartfs/rc/nosnapshots/G/GMBSR_refs/fobwrkshp/raw_fastq_files/`. To speed up computations in the workshop, these FASTQ files have been subset to only contain reads that align to chromosome 20.
 
 ```bash
 # lets have a look at the project directory containing the reduced raw FASTQs
-ls -lah $SOURCE/raw_fastq_files/
+ls -lah $RESOURCE/raw_subset_fastq/
 
 # lets have a look at the project directory containing the full raw FASTQs
 ls -lah $SOURCE/raw_full_fastq/
@@ -103,14 +103,12 @@ mkdir raw
 cd raw
 
 # Create a symlink to the data directory in the scratch drive
-ln -s $SOURCE/raw_fastq_files/*fastq.gz ./
+ln -s $RESOURCE/raw_subset_fastq/*fastq.gz ./
 
 # Check that your command worked
 ls -lah
 ```
-Any modifications made to the original files in `/dartfs-hpc/scratch/fund_of_bioinfo/raw_fastq_files/` will also be seen in the symlink files. Moving the original files or deleting the original files will cause the symlinks to malfunction.
-
-Remember, because your symlinks are pointing to something in the scratch directory these files are slated to be deleted in 45 days, at which point your symlinks will still exist but no longer function properly.
+Any modifications made to the original files in `/dartfs/rc/nosnapshots/G/GMBSR_refs/fobwrkshp/raw_subset_fastq/` will also be seen in the symlink files. Moving the original files or deleting the original files will cause the symlinks to malfunction.
 
 ### Basic operations
 
@@ -138,12 +136,12 @@ To do this, we would need to print all the sequence lines of each FASTQ entry, t
 
 To print all the sequence lines (2nd line) of each FASTQ entry, we can use a command called `sed`, short for *stream editor* which allows you to streamline edits to text that are redirected to the command. You can find a tutorial on using `sed` [here](https://www.digitalocean.com/community/tutorials/the-basics-of-using-the-sed-stream-editor-to-manipulate-text-in-linux). The `sed` command often accepts a 'script' as an argument indicating the edits that should be made, the script argument is indicated by the text between single quotes.
 
-First we will use `sed` with the `'p'` argument in the script to indicate we want the output to be printed, and the `-n` option to tell `sed` we want to run the command in silent mode. We specify `'2~4p'` as we want `sed` to *print line 2, then skip forward 4*. We can then pipe these results to the `head` command, we can get the sequence line of the first 10 entries in the FASTQ file. 
+Within the `sed` command we want to exercise fine grained control on how the program prints lines to the screen. First we will use `sed` with the `'p'` argument in the script to indicate we want the output from the sed script (the parts in apostrophes) to be printed, and the `-n` option to tell `sed` we want to run the command in silent mode. We specify `'2~4p'` as we want `sed` to *print line 2, then skip forward 4*. We can then pipe these results to the `head` command, we can get the sequence line of the first 10 entries in the FASTQ file. 
 ```bash
 zcat SRR1039508_1.chr20.fastq.gz | sed -n '2~4p' | head
 ```
 
-Building on this approach, we can print the second line for the first 10,000 entries of the FASTQ file, and use the `grep` command to search for the adapter sequence in the output. We use the `-o` option for grep, to print only the portion of the line that matches the character string.
+Building on this approach, we can apply this code to the first 10,000 entries of the FASTQ file, and add the `grep` command to search for the adapter sequence in the output. We use the `-o` option for grep, to print only the portion of the line that matches the character string.
 ```bash
 
 # Pipe the sequence line from the first 10000 FASTQ records to grep to search for our (pretend) adapter sequence
@@ -198,27 +196,27 @@ This loop essentially states `for` i in the list of numbers from 1 to 10, `do` p
 Alternatively, if you do not know how many times you might need to run a loop, using a `while` loop may be useful, as it will continue the loop until the Boolean (logical) specified in the first line evaluates to `false`. An example would be looping over all of the files in your directory to perform a specific task. e.g.
 
 ```bash
-ls *.fastq.gz | while read x; do \
+ls *.fastq.gz | while read x; do 
    # tell me what the shell is doing
-   echo $x is being processed...\n;
+   echo $x is being processed...
    # unzip w/ zcat and print head of file
-   zcat $x | head -n 4;  \
-   # print 3 lines to for ease of viewing
-   echo -e "\n\n\n" ;
+   zcat $x | head -n 4
+   # print 2 lines to for ease of viewing
+   echo -e "\n\n" 
 done
 ```
 This loop is a bit more complex and you will notice each new line of code within the loop ends in `; \` to indicate that even though the codes starts on a new line (for readability) we are still entering commands to be executed within the loop. In this loop we are saying:
 
 1. `ls *.fastq.gz` list all the files in the current directory ending in *.fastq.gz* 
 2. `while read x; do` as long as there are still files in the list save the filename as $x
-3. `echo $x is being processed..\n;` print the sample name to the screen
+3. `echo $x is being processed..;` print the sample name to the screen
 4. `zcat $x|head -n 4` zcat the file and print the first entry
-5. `echo -e "\n\n\n" ;` print three new lines to separate the output from the previous file (the -e flag enables interpretation of `\`) 
+5. `echo -e "\n\n" ;` print two new lines to separate the output from the previous file (the -e flag enables interpretation of `\`) 
 
 Perhaps we want to check how many of the first 10000 reads in each file contain the start codon `ATG`. We can do this by searching for matches and counting how many times it was found, and repeating this process for each sample using a while loop.
 
 ```bash
-ls *.fastq.gz | while read x; do \
+ls *.fastq.gz | while read x; do 
    echo $x
    zcat $x | sed -n '2~4p' | head -n 10000 | grep -o "ATG" | wc -l
 done
@@ -227,24 +225,24 @@ done
 We could use one of these loops to perform the nucleotide counting task that we performed on a single sample above, but apply it to all of our samples in a single command.
 
 ```bash
-ls *.fastq.gz | while read x; do \
+ls *.fastq.gz | while read x; do 
    echo -e "\n"
    echo processing sample $x
-   zcat $x | sed -n '2~4p' | head -10000 | grep -o . | sort | uniq -c ;
+   zcat $x | sed -n '2~4p' | head -10000 | grep -o . | sort | uniq -c 
 done
 ```
 
 ## Scripting in bash
 ----
 
-So loops are pretty useful, but once we write some useful code we want to save it to use later. This way we aren't reinventing the wheel and we can share the program we just wrote with other lab members.
+Reproducability is an important topic in data analytics. As you saw above many of the operations performed are repetatively applied to several samples and loops are a useful way to automate this process, but once we write some useful code we want to save it to use later. This way we aren't reinventing the wheel and we can share the program we just wrote with other lab members, or apply it to another dataset at a later date.
 
-One way to do this would be to write this series of commands into a Bash script, that can be executed at the command line, passing the files you would like to be operated on to the script. Though not required, generally the suffix of a script indicates the language the script is written in, for BASH scripts we use `*.sh`, for python we use `*.py`, for perl we use `*.pl`, and for R we use `*.R`. 
+One way to do this would be to write this series of commands into a Bash script, that can be executed at the command line, passing the files you would like to be operated on to the script. Generally the suffix of a script indicates the language the script is written in, for BASH scripts we use `*.sh`, for python we use `*.py`, for perl we use `*.pl`, and for R we use `*.R`. 
 
 Lets create a script to count nucleotide frequencies:
 
 ```bash
-nano count_ATGC.sh
+nano count_nt.sh
 ```
 The first thing we need to add to our script (and this is true of any script) is called a shebang, this line indicates the coding language used in the body of the script. The BASH shebang is `#!/bin/bash`.
 
@@ -254,23 +252,26 @@ Next we add our program to the script. As in the loops we use the `$` to specify
 Copy the following code into the nano editor file you just opened and use the ctrl+x command to close the file and save the changes you made.
 ```bash
 #!/bin/bash
-echo processing sample "$1"; zcat $1 | sed -n '2~4p' | head -n 10000 | grep -o . | sort | uniq -c
+
+echo processing sample "$1"
+
+zcat $1 | sed -n '2~4p' | head -n 10000 | grep -o . | sort | uniq -c
 ```
 
 Now run the script, specifying the a FASTQ file as variable 1 (`$1`)
 
 ```bash
 # have a quick look at our script
-cat count_ATGC.sh
+cat count_nt.sh
 
 # now run it with bash - which again indicates that the code is in the BASH language
-bash count_ATGC.sh SRR1039508_1.chr20.fastq.gz
+bash count_nt.sh SRR1039508_1.chr20.fastq.gz
 ```
 
 If we wanted to run on multiple samples we can use our while loop again to do this for all the FASTQs in our directory
 ```bash
-ls *.fastq.gz | while read x; do \
-   bash count_ATGC.sh $x
+ls *.fastq.gz | while read x; do 
+   bash count_nt.sh $x
 done
 ```
 
@@ -280,8 +281,8 @@ What if we wanted to write the output into a file instead of printing to the scr
 touch out.txt
 
 # run the loop
-ls *.fastq.gz | while read x; do \
-   bash count_ATGC.sh $x >> out.txt
+ls *.fastq.gz | while read x; do 
+   bash count_nt.sh $x >> out.txt
 done
 
 # view the file
@@ -318,32 +319,31 @@ Run FASTQC on our data and move the results to a new directory.
 # specify the -t option for 4 threads to make it run faster
 fastqc -t 1 *.fastq.gz
 
-# move results to a new folder
-mkdir $FOB/rawQC
-mv *fastqc* $FOB/rawQC
-
-# move into it and ls
-cd $FOB/rawQC
 ls -lah
 ```
 
 **Note**: FastQC does not use the entire dataset, just the first few thousand reads in the FASTQ file, therefore there could be some bias introduced by this, although we assume there isn't since entries are placed into FASTQ files randomly.
 
-Opening and evaluating an individual HTML file for each FASTQ file is tedious and slow. Luckily, someone built a tool to speed this up. [MultiQC](https://multiqc.info/) searches a specified directory (and subdirectories) for log files that it recognizes and synthesizes these into its own browsable, sharable, interactive .html report that can be opened in a web-browser. *MultiQC* recognizes files from a very wide range of bioinformatics tools (including FastQC), and allows us to compare QC metrics generated by various tools across all samples so that we can analyze our experiment as a whole.
+Opening and evaluating an individual HTML file for each FASTQ file is tedious and slow. Luckily, someone built a tool to coalate various types of analytic reports. [MultiQC](https://multiqc.info/) searches a specified directory (and subdirectories) for log files that it recognizes and synthesizes these into its own browsable, sharable, interactive .html report that can be opened in a web-browser. *MultiQC* recognizes files from a very wide range of bioinformatics tools (including FastQC), and allows us to compare QC metrics generated by various tools across all samples so that we can analyze our experiment as a whole.
 
 Lets run MultiQC on our FastQC files:
 ```bash
 multiqc .
 ```
 
-Copy to report to your **LOCAL MACHINE** in a new folder and open in a web-browser:
-```bash
-# make a directory and go into it (ON YOUR LOCAL MACHINE)
-mkdir fund_of_bioinfo/
-cd fund_of_bioinfo/
+To view this html file we will need to move data from dsicovery onto your **LOCAL MACHINE**. To start open a new terminal environment and use the `pwd` command to figure out where you are and navigate to where you want to write the file, I would recommend the `Downloads` directory. 
 
-# use secure copy (scp) to download the files to your local machine - remember to change the netID before you to your own, or your initials, and paste this command into the terminal
-scp netID@discovery7.dartmouth.edu:/dartfs-hpc/scratch/NETID/fundamentals_of_bioinformatics/rawQC/multiqc_report.html .
+The command looks intimidating but the syntax is similar to previous commands we have used in that it accepts two arguments; first the path to the source file and second the path where the file should be written (or copied).  
+
+```bash
+# open a new terminal environment and check your path
+pwd
+# navigate to Downloads directory (ON YOUR LOCAL MACHINE)
+cd Downloads/ # you may need to adjust this path depending on the organization of your machine
+
+# use secure copy (scp) to download the files to your local machine -
+# EDIT THE COMMAND BELOW to include your netID and your initials, and paste this command into the terminal
+scp NETID@discovery7.dartmouth.edu:/dartfs-hpc/scratch/YOUR_DIRECTORY/raw/multiqc_report.html ./
 ```
 
 You can find the MultiQC report run on the complete dataset across all samples in the dataset in the Github repository, under `QC-reports`. Let's open it and explore our QC data. If the `scp` command did not work for you there is a copy of the multiqc report in the Github repo you downloaded under `Day-1/data/multiqc_report.html`.
