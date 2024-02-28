@@ -1,10 +1,10 @@
-## Fundamentals of Bioinformatics, December 2022
+## Fundamentals of Bioinformatics, March 2024
 
-This workshop will be delivered on December 5th, 7th, & 9th by the Data Analytics Core (DAC) of the [Center for Quantitative Biology at Dartmouth](https://sites.dartmouth.edu/cqb/). 
+This workshop will be delivered on March 13, 14, & 15, 2024 by the Genomic Data Science Core (GDSC) of the [Center for Quantitative Biology at Dartmouth](https://sites.dartmouth.edu/cqb/). 
 
-The DAC aims to facilitate advanced bioinformatic, computational, and statistical analysis of complex genomics data for the Dartmouth research community. 
+The GDSC aims to facilitate advanced bioinformatic, computational, and statistical analysis of complex genomics data for the Dartmouth research community. 
 
-If you have questions about this workshop, or would like to discuss data analysis services available from the Data Analytics Core, please visit our [website](https://sites.dartmouth.edu/cqb/projects-and-cores/data-analytics-core/), or email us at: DataAnalyticsCore@groups.dartmouth.edu
+If you have questions about this workshop, or would like to discuss data analysis services available from the GDSC, please visit our [website](https://sites.dartmouth.edu/cqb/projects-and-cores/data-analytics-core/), or email us at: GDSC@groups.dartmouth.edu
 
 <img src="figures/logo (1).jpg" width="250" height="140" >
 
