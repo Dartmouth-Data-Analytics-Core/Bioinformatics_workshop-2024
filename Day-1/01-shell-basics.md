@@ -117,6 +117,7 @@ pwd
 ```
 You should see something like `/dartfs-hpc/rc/home/h/netID` displayed in response to your command. Initially when you log on you will always be directed to your home directory (the address or path listed above). Your home directory by default will have 50GB of storage space to begin with, if you are running something that requires more storage space it is possible to extend that limit temporarily with the `/dartfs-hpc/scratch/ drive`. This is where we have stored all of the files you will be working with today. Directories and files hosted on the `/dartfs-hpc/scratch/` drive will only be kept for 45 days, you will receive a notification from Research Computing before the data is deleted.
 
+
 ## Start a new directory
 
 Let's start by making a folder, or directory, to store all of the work you do today. It's often a useful practice to give directories informative names, for example `230601_YOURINITIALS_rnawrkshp`, (ex. Owen's `230601_omw_rnawrkshp`, Shannon's `230601_sms_rnawrkshp`, Tim's `230601_sullivan_rnawrkshp`). At a glance I could tell that this directory contains data from June 01, 2023 pertaining to an RNAseq workshop. Notice I chose a title with no spaces. The 'space' is a *special character* in UNIX, and special characters need to be *escaped* with the `\` and so `230601_abc_workshp` would look like `230601\ abc\ workshp` with escape characters.
@@ -140,21 +141,51 @@ pwd
 # List the contents of your directory
 ls
 ```
-As expected, the new directory that you created is empty there are no files. Lets copy a file from the resource directory we created for this workshop to the directory you just created. This file (`all_counts.txt`) provides raw read counts for an RNA-seq experiment, with genes in rows and samples in columns.
+As expected, the new directory that you created is empty there are no files. 
 
-Below we will use `all_counts.txt` for a number of exercises to familiarize you with standard UNIX commands.
+## Customize your environment
+
+What is an alias
+What is a .bash_profile
+
+This can be a real time saver to save alias for frequently accessed work directories.
+
+Add the following definitions to your `.bash_profile` using the `nano` text editor.
+```
+nano ~/.bash_profile
+```
+This opens your `.bash_profile` where you can copy the following definitions and add them to the bottom of the file, do not forget to edit the path of the **FOB** definition to include your own initials. 
+
+```
+# define the location for the workshop resources we provide
+RESOURCE="/dartfs/rc/nosnapshots/G/GMBSR_refs/fobwrkshp/"
+
+# define the location where you will be working during the workshop
+FOB="/dartfs-hpc/scratch/240313_sms_fob"
+```
+
+Next use the `ctrl + X` keys to close the file, type `Y` to save your changes. Now let's reload your `.bash_profile` to customize your session and check that our definitions are working as expected.
+
+```
+source ~/.bash_profile
+
+echo $FOB
+echo $RESOURCE
+```
+
+### Viewing the contents of files
+
+Lets copy a file from the resource directory we created for this workshop to the directory you just created. This file (`all_counts.txt`) provides raw read counts for an RNA-seq experiment, with genes in rows and samples in columns.
 
 ```bash
 #it is prudent to run the 'pwd' command before running the 'cp' command so you know where your files will be copied to
 pwd
 
-# copy the file from the resource directory to the '240313_sms_workshop' directory you just created
-# remember the ./ is shorthand for the directory that you are currently in
-cp /dartfs/rc/nosnapshots/G/GMBSR_refs/rnawrkshp/counts/all_counts.txt ./
+# copy the file from the resource directory to the $FOB directory you just created
+
+cp $RESOURCE/all_counts.txt $FOB
+
 ```
-
-
-### Viewing the contents of files
 
 The shell provides us with commands to view the contents of files in defined ways. The `cat` command for example (which stands for for concatenate) will print the entire contents of a file to the terminal. This can be useful for smaller files, but as you will see with larger files can quickly fill the terminal with more lines of data than it can display.
 
