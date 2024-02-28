@@ -197,25 +197,23 @@ cd ~
 mkdir -p .conda/pkgs/cache .conda/envs
 ```
 
-Lastly you will need to create the conda environment that we will be using for the workshop in your personal directory of conda environments. This takes about 15 minutes to execute and you will see all of the packages that are loaded into this environment.  
-
-In this command we are using the file `environment.yml` with the `-f` flag in the `conda env create` command. This file specifies a list of all the software we need for this workshop. 
+Another way to create a conda environment is to use a `.yml` file to specify the software you would like installed in your environment. The file `environment.yml` is specified with the `-f` flag in the `conda env create` command.  
 
 ```bash
-cat /dartfs-hpc/scratch/fund_of_bioinfo/environment.yml
+cat /dartfs/rc/nosnapshots/G/GMBSR_refs/fobwrkshp/environment.yml
 ```
 
-You can see we have specified a name for the environment, and the channel to use for the downloads in the `environment.yml` file rather than using the `-c` and `-n` flags. The number of packages being installed should indicate why conda environments are so useful, imagine having to load all of these packages individually it is much easier to load them with a single command in a conda environment. Now lets create the bioinfo environment.
+You can see we have specified a name for the environment, and the channel to use for the downloads in the `environment.yml` file rather than using the `-c` and `-n` flags. The number of packages being installed should indicate why conda environments are so useful, imagine having to load all of these packages individually it is much easier to load them with a single command in a conda environment. The command below is how you could use this file to build a conda environment located in the directory you just created (`.conda/envs`). This command takes a while to execute so in the interest of time we have created this environment for you.
 
 ```bash
-conda env create -f /dartfs-hpc/scratch/fund_of_bioinfo/environment.yml
+conda env create -f /dartfs/rc/nosnapshots/G/GMBSR_refs/fobwrkshp/environment.yml
 ```
 
-Once your environment has been successfully created you can load it with the command `conda activate bioinfo`:
+Activate the conda environment we created for you with the following command:
 
 ```bash
 # Load conda environment
-conda activate bioinfo
+conda activate /dartfs/rc/nosnapshots/G/GMBSR_refs/envs/bioinfo
 # Check your PATH compared to before activating, note the additional binaries folder
 echo $PATH| tr ":" "\n"
 ```
