@@ -1,14 +1,26 @@
 # Working with NGS data Part III
 
-## Introduction
-After generating read alignments to your genome of interest, there are several downstream analysis tasks that can be performed to represent the final reduced representation of the dataset. How we use the read alignments to generate the reduced representation of the dataset is dependent on the hypothesis we are testing. Two very common tasks that are performed on alignments are *read quantification* and *variant calling*.
+```bash
+# IF YOU'RE JUST LOGGING ONTO DISCOVERY
+#log on to a compute node if not already on one:
+srun --nodes=1 --ntasks-per-node=1 --mem-per-cpu=4GB --cpus-per-task=1 --time=08:00:00 --partition=preempt1 --account=DAC --pty /bin/bash
+source ~/.bash_profile
 
-**Read quantification:**
-- Often referred to as read counting, several NGS applications require us to count reads overlapping specific features to extract insights. For example, in RNA-seq, the number of reads overlapping each gene is used to infer expression level.
+# activate the wokrshop conda environment
+conda activate /dartfs/rc/nosnapshots/G/GMBSR_refs/envs/bioinfo
 
-**Variant Calling:**
-- In WGS/WES experiments, we are usually interested in identifying genetic variants that are present in a sequenced sample, but not in the reference genome that the sample was aligned to.
+#check that your aliases are defined
+echo $FOB
+echo $RESOURCE
 
+####################
+## If you got lost or missed the last session you can copy all of the files we built in the alignment section with the following commands.
+
+#make a directory to store aligned files
+mkdir -p $FOB/align
+# copy files
+cp $RESOURCE/align/* $FOB/align/
+```
 ---
 
 ## Learning Objectives:
@@ -20,26 +32,15 @@ After generating read alignments to your genome of interest, there are several d
 
 ---
 
-## Lesson setup:
+## Introduction
+After generating read alignments to your genome of interest, there are several downstream analysis tasks that can be performed to represent the final reduced representation of the dataset. How we use the read alignments to generate the reduced representation of the dataset is dependent on the hypothesis we are testing. Two very common tasks that are performed on alignments are *read quantification* and *variant calling*.
 
-If you got lost or missed the last session you can copy all of the files we built in the alignment section with the following commands.
-```bash
-# IF YOU'RE JUST LOGGING ONTO DISCOVERY
+**Read quantification:**
+- Often referred to as read counting, several NGS applications require us to count reads overlapping specific features to extract insights. For example, in RNA-seq, the number of reads overlapping each gene is used to infer expression level.
 
-#log on to a compute node if not already on one:
-srun --nodes=1 --ntasks-per-node=1 --mem-per-cpu=4GB --cpus-per-task=1 --time=08:00:00 --partition=preempt1 --account=DAC --pty /bin/bash
-source ~/.bash_profile
+**Variant Calling:**
+- In WGS/WES experiments, we are usually interested in identifying genetic variants that are present in a sequenced sample, but not in the reference genome that the sample was aligned to.
 
-# activate the conda environment
-conda activate bioinfo
-
-#create a variable for the source directory
-SOURCE="/dartfs-hpc/scratch/fund_of_bioinfo"
-
-# If you didn't have time to finish aligning copy these files now
-mkdir -p $FOB/aligned
-cp $SOURCE/aligned/* $FOB/aligned/
-```
 ---
 
 ## Part 1: Read count quantification
@@ -73,8 +74,8 @@ Specifies if reads in your experiment come from a stranded (`yes`) or unstranded
 cd $FOB
 
 # make a new directory to store your data in
-mkdir -p  $FOB/counts
-cd $FOB/counts
+mkdir counts
+cd counts
 
 # quantify reads that map to exons (default)
 htseq-count \
@@ -82,8 +83,8 @@ htseq-count \
 -s no \
 -r pos \
 -t exon \
-$FOB/aligned/SRR1039508.Aligned.sortedByCoord.out.bam \
-$SOURCE/refs/Homo_sapiens.GRCh38.97.chr20.gtf > SRR1039508.htseq-counts
+$FOB/align/SRR1039508.Aligned.sortedByCoord.out.bam \
+$RESOURCE/refs/Homo_sapiens.GRCh38.97.chr20.gtf > SRR1039508.htseq-counts
 ```
 
 Have a look at the resulting file.
@@ -100,12 +101,12 @@ tail -n 12 SRR1039508.htseq-counts
 
 This process can be repeated for each sample in your dataset, and the resulting files compiled to generate a matrix of raw read counts that serve as input to downstream analysis (e.g. differential expression or binding analysis).
 ```bash
-ls $FOB/aligned/*.Aligned.sortedByCoord.out.bam | while read x; do
+ls $FOB/align/*.Aligned.sortedByCoord.out.bam | while read x; do
 
   # save the file name
   sample=`echo "$x"`
   # get everything in file name before "/" (to remove '$FOB/alignment/')
-  sample=`echo "$sample" | cut -d"/" -f7`
+  sample=`echo "$sample" | cut -d"/" -f6`
   # get everything in file name before "." e.g. "SRR1039508"
   sample=`echo "$sample" | cut -d"." -f1`
   echo processing "$sample"
@@ -116,8 +117,8 @@ ls $FOB/aligned/*.Aligned.sortedByCoord.out.bam | while read x; do
   -s no \
   -r pos \
   -t exon \
-  $FOB/aligned/$sample.Aligned.sortedByCoord.out.bam \
-  $SOURCE/refs/Homo_sapiens.GRCh38.97.chr20.gtf > $sample.htseq-counts;
+  $FOB/align/$sample.Aligned.sortedByCoord.out.bam \
+  $RESOURCE/refs/Homo_sapiens.GRCh38.97.chr20.gtf > $sample.htseq-counts;
 done
 ```
 
@@ -188,18 +189,18 @@ Specifies the region of the reference file to call variants, this argument accep
 cd $FOB
 
 # make a new directory to store your data in
-mkdir -p  $FOB/vars
-cd $FOB/vars
+mkdir vars
+cd vars
 
 #check the naming syntax of the reference file
-grep ">" $SOURCE/refs/Homo_sapiens.GRCh38.dna.primary_assembly.chr20.fa
+grep ">" $RESOURCE/refs/Homo_sapiens.GRCh38.dna.primary_assembly.chr20.fa
 
 # call variants on chromosome 20
-$SOURCE/software/freebayes \
--f $SOURCE/refs/Homo_sapiens.GRCh38.dna.primary_assembly.chr20.fa \
+freebayes \
+-f $RESOURCE/refs/Homo_sapiens.GRCh38.dna.primary_assembly.chr20.fa \
 -r 20 \
 -v $FOB/vars/SRR1039508.vcf \
--b $FOB/aligned/SRR1039508.Aligned.sortedByCoord.out.bam
+-b $FOB/align/SRR1039508.Aligned.sortedByCoord.out.bam
 ```
 The standard file format output by variant callers is `Variant Call Format`, or `VCF`, which is a tabular format containing the genomic location of each variant and the level of evidence for it in each sample, as well as a header describing the construction of the file.
 
@@ -304,11 +305,11 @@ Once variant calling is performed and a confident set of variants is determined 
 - Build a code loop for running variant calling on all 4 samples using the following framework
 
 ```bash
-ls $FOB/aligned/*.Aligned.sortedByCoord.out.bam | while read x; do
+ls $FOB/align/*.Aligned.sortedByCoord.out.bam | while read x; do
 
   # save the file name
   sample=`echo "$x"`
-  # get everything in file name before "/" (to remove '$FOB/alignment/')
+  # get everything in file name before "/" (to remove '$FOB/align/')
   sample=`echo "$sample" | cut -d"/" -f6`
   # get everything in file name before "." e.g. "SRR1039508"
   sample=`echo "$sample" | cut -d"." -f1`
