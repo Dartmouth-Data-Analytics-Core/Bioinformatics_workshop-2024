@@ -7,16 +7,12 @@
 srun --nodes=1 --ntasks-per-node=1 --mem-per-cpu=4GB --cpus-per-task=1 --time=08:00:00 --partition=preempt1 --account=DAC --pty /bin/bash
 source ~/.bash_profile
 
-# activate the conda environment
-conda activate bioinfo
+# activate the wokrshop conda environment
+conda activate /dartfs/rc/nosnapshots/G/GMBSR_refs/envs/bioinfo
 
-#create a variable for the source directory 
-SOURCE="/dartfs-hpc/scratch/fund_of_bioinfo"
-
-# IF YOU DIDN'T HAVE TIME TO FINISH TRIMMING TASK, COPY THOSE FILES NOW
-mkdir -p $FOB/trim
-cp $SOURCE/trim/* $FOB/trim/
-
+#check that your aliases are defined
+echo $FOB
+echo $RESOURCE
 ```
 
 ## Alignment files (BAM/SAM/CRAM formats)
@@ -26,16 +22,6 @@ cp $SOURCE/trim/* $FOB/trim/
 - Learn how alignment data is stored in SAM/BAM format
 - Learn how to perform basic operations on BAM files using `Samtools`
 - Perform an alignment with `STAR`
-
-Make a new directory to work in:
-```bash
-# go to your home directory for the workshop
-cd $FOB
-
-# make the directory and cd into it
-mkdir -p $FOB/aligned
-cd $FOB/aligned
-```
 
 ## Principles of read mapping for RNA-seq
 ---
@@ -53,7 +39,7 @@ Challenges of aligning millions of short reads to a reference genome involve:
 - Mismatches introduced by genetic variation and sequencing errors
 - Repetitive sequences in genomes (e.g. start and end of chromosomes)
 - For Eukaryotic genomes the presence of introns in reference genomes, meaning aligners must be able to consider splice-junctions
-- For Prokaryotic genomes the presence of mobile genetic elements or recombination hotspots in reference genomes
+- For Prokaryotic genomes the presence of mobile genetic elements or recombination hotspots 
 
 It is important when selecting an aligner to select one appropriate for your experiment. Different aligners generally have different properties and applications. For example, some aligners are **splice-aware** while others are not. Splice-aware aligners can generate alignments that span intronic regions and therefore account for splicing, e.g. `STAR` and `HISAT2`. If your dataset is prokaryotic (non-splicosomal) you would not want to use a splice-aware aligner, and instead using an aligner that is not designed to map across intronic regions such as `bwa-mem` or `bowtie2`.
 
@@ -78,13 +64,13 @@ Reference genomes are generally distributed in FASTA file format, with separate 
 
 ```bash
 # print head of FASTA file
-head $SOURCE/refs/Homo_sapiens.GRCh38.dna.primary_assembly.fa
+head $RESOURCE/refs/Homo_sapiens.GRCh38.dna.primary_assembly.fa
 
 # print tail of FASTA file
-tail $SOURCE/refs/Homo_sapiens.GRCh38.dna.primary_assembly.fa
+tail $RESOURCE/refs/Homo_sapiens.GRCh38.dna.primary_assembly.fa
 
 # print only header lines for each FASTA record
-grep ">" $SOURCE/refs/Homo_sapiens.GRCh38.dna.primary_assembly.fa
+grep ">" $RESOURCE/refs/Homo_sapiens.GRCh38.dna.primary_assembly.fa
 ```
 
 #### Limitations of reference genomes
@@ -105,13 +91,13 @@ Reference genomes are hosted on a number of different websites and often accompa
 Genome annotations are most commonly distributed using the GTF (Gene transfer format) file format. We will explore this format in more detail later in the lesson, however we can briefly look at an example annotation file for hg38:
 ```bash
 # print head of GTF file
-head $SOURCE/refs/Homo_sapiens.GRCh38.97.chr20.gtf
+head $RESOURCE/refs/Homo_sapiens.GRCh38.97.chr20.gtf
 
 # print tail of GTF file
-tail $SOURCE/refs/Homo_sapiens.GRCh38.97.chr20.gtf
+tail $RESOURCE/refs/Homo_sapiens.GRCh38.97.chr20.gtf
 
 # print all lines containing CDK9
-grep "ESF1" $SOURCE/refs/Homo_sapiens.GRCh38.97.chr20.gtf
+grep "ESF1" $RESOURCE/refs/Homo_sapiens.GRCh38.97.chr20.gtf
 ```
 
 The table below from the [UCSC website](https://genome.ucsc.edu/FAQ/FAQgenes.html#gene) highlights how different genome annotations produced by different annotation pipelines can be with respect to availability of transcript models for human genome build GRCh38/hg38 (as of March 2019).  
@@ -134,7 +120,7 @@ rsync -a -P rsync://hgdownload.soe.ucsc.edu/goldenPath/hg38/hg38Patch11/ ./
 ```
 
 This is one example, but generally you should follow instructions on downloading references from the website/center hosting them on the ftp site.
-
+>This is a great example of a command that is useful to run with nohup during an interactive session as these downloads can take a long time. 
 
 
 ## General concepts for read alignment
@@ -255,15 +241,18 @@ You can find the pre-built index at `/scratch/fund_of_bioinfo/refs/hg38_chr20_in
 We are ready to align the reads from the paired-end FASTQ files `SRR1039508_1.trim.chr20.fastq.gz` and `SRR1039508_2.trim.chr20.fastq.gz`.
 
 ```bash
+# go to your home directory for the workshop
+cd $FOB
+
 # make a directory for aligned reads and enter it
-mkdir -p $FOB/aligned
-cd $FOB/aligned
+mkdir align
+cd align
 
 # run splice aware alignment
-STAR --genomeDir $SOURCE/refs/hg38_chr20_index \
-  --readFilesIn $FOB/trim/SRR1039508_1.trim.chr20.fastq.gz $FOB/trim/SRR1039508_2.trim.chr20.fastq.gz \
+STAR --genomeDir $RESOURCE/refs/hg38_chr20_index \
+  --readFilesIn $FOB/raw/SRR1039508_1.chr20.fastq.gz $FOB/raw/SRR1039508_2.chr20.fastq.gz \
   --readFilesCommand zcat \
-  --sjdbGTFfile $SOURCE/refs/Homo_sapiens.GRCh38.97.chr20.gtf \
+  --sjdbGTFfile $RESOURCE/refs/Homo_sapiens.GRCh38.97.chr20.gtf \
   --runThreadN 1 \
   --outSAMtype SAM \
   --outFilterType BySJout \
@@ -303,7 +292,7 @@ cat SRR1039508.Log.final.out
 
 It would be tedious (and error prone) to repeat the code we used above to perform read mapping for multiple samples. Instead we will use a `while` loop to capture iterate the alignment process over each of our samples. Before we run this loop it's worth breaking down what each line is doing:
 
-1. `ls $FOB/trim/*_1.trim.chr20.fastq.gz |while read x; do` list the forward read files and iterate through each sample. Since we don't want this loop to run twice for each sample (remember reads are paired) we are only specifying the forward read in our regular expression.
+1. `ls $FOB/raw/*_1.chr20.fastq.gz |while read x; do` list the forward read files and iterate through each sample. Since we don't want this loop to run twice for each sample (remember reads are paired) we are only specifying the forward read in our regular expression.
 2. ``sample=`echo "$x` `` save the file name to the variable sample, you will notice unlike our previous loops we don't want the echo statement to print to the screen instead we want the output of the command to be saved to our new variable `$sample` to do this we use the backticks `` ` `` which tells shell to evaluate the command inside the backticks and then return the result to the line of code. This is similar to how parentheses are used in mathematic equations. 
 3. ``sample=`echo "$sample" | cut -d"/" -f3` `` use the `cut` command to split the path on the `/` character and isolate the filename only, which is in the fourth field
 4. `` sample=`echo "$sample" | cut -d"_" -f1` `` use the `cut` command to split the filename on the `_` character to get only the sample name, which is the first field
@@ -313,21 +302,21 @@ It would be tedious (and error prone) to repeat the code we used above to perfor
 8. `done` finish the loop
 
 ```bash
-ls $FOB/trim/*_1.trim.chr20.fastq.gz | while read x; do
+ls $FOB/raw/*_1.chr20.fastq.gz | while read x; do
 
   # save the file name
   sample=`echo "$x"`
-  # get everything in file name before "/" (to remove '$FOB/trim/')
-  sample=`echo "$sample" | cut -d"/" -f7`
+  # get everything in file name before "/" (to remove '$FOB/raw/')
+  sample=`echo "$sample" | cut -d"/" -f6`
   # get everything in file name before "_" e.g. "SRR1039508"
   sample=`echo "$sample" | cut -d"_" -f1`
   echo processing "$sample"
 
   # run STAR for each sample
-  STAR --genomeDir $SOURCE/refs/hg38_chr20_index \
-    --readFilesIn $FOB/trim/${sample}_1.trim.chr20.fastq.gz $FOB/trim/${sample}_2.trim.chr20.fastq.gz \
+  STAR --genomeDir $RESOURCE/refs/hg38_chr20_index \
+    --readFilesIn $FOB/raw/${sample}_1.chr20.fastq.gz $FOB/raw/${sample}_2.chr20.fastq.gz \
     --readFilesCommand zcat \
-    --sjdbGTFfile $SOURCE/refs/Homo_sapiens.GRCh38.97.chr20.gtf \
+    --sjdbGTFfile $RESOURCE/refs/Homo_sapiens.GRCh38.97.chr20.gtf \
     --runThreadN 4 \
     --outSAMtype BAM SortedByCoordinate \
     --outFilterType BySJout \
@@ -397,122 +386,6 @@ samtools view -c -f 256 SRR1039508.Aligned.sortedByCoord.out.bam
 
 ```
 
-
-## Visualizing alignments with IGV
-----
-
-Alignments can be visualized using genome browser software such as the Integrative Genomics Viewer (IGV), allowing you to interactively explore alignments to a reference genome and how they overlap with genome annotation (e.g. gene models). This is an extremely useful way to visualize NGS data, and also allows you to review the evidence supporting downstream analysis results generated from aligned reads (e.g. variant calls).
-
-The figure below shows some example alignments for paired-end mouse RNA-seq data visualized using the IGV.
-
-<p align="center">
-<img src="../figures/rna-seq-alignments.png" title="xxxx" alt="context"
-	width="95%" height="95%" />
-</p>
-
-Note how the alignments pile up over the exons, which makes sense since these are RNA-seq data where only the transcriptome was sequenced. In these data we expect to see gaps that span the intronic regions. If we had not used a gapped aligner such as STAR, we would have failed to generate many of these alignments. If these data were whole genome assembly we would expect more even coverage of most locations in the genome. 
-
-IGV supports a wide-range of genomic file formats that contain data ranging from simple genomic regions, to complex alignments and signal tracks. File types supported by IGV include:  
-* .BAM - alignments  
-* .GTF/GFF - genomic features  
-* .VCF - variant call format  
-* .BED - genomic regions   
-* .BIGWIG - signal tracks
-
-We will cover the utilization of some of the other file types in another lesson, but the range of file formats supported by IGV means it is able to facilitate exploration and visualization of virtually all types of genomics data generated from diverse experimental procedures, for example:  
-
-**Reference genomes and annotations**
-The IGV server also hosts a number of reference genomes and annotations, meaning you do not need to load your own genome from a file for many model organisms. You can view the list of hosted genomes on their website [here](http://software.broadinstitute.org/software/igv/Genomes). IGV also provide access to data from large consortia-scale projects such as [*ENCODE*](https://www.encodeproject.org/), [*1000 Genomes*](https://www.internationalgenome.org/home), and [*The Cancer Genome Atlas (TCGA)*](https://www.cancer.gov/about-nci/organization/ccg/research/structural-genomics/tcga).
-
-If your genome is not included in the available set through the IGV server, you can load genomes directly into IGV using `Genomes > Load Genome from file`. To visualize gene/transcript annotation for your genome, a GTF/GFF file containing gene, transcript, exon and UTR coordinates for that genome can be loaded using `File > Load From File.` IGV will automatically separate out the sequences in different entries of the FASTA file.
-
-### How do we use IGV?
-
-IGV can be installed and run locally on MacOS, Linux and Windows as a Java desktop application (which is how we will use it today). You should have all downloaded and installed the Desktop version of IGV for the operating system you are working on.
-
-There is now also an [IGV web-app](https://igv.org/app/) that does not use Java and only needs an internet browser, although is generally slower than if you run the Desktop version.
-
-**Note:** This is by no means a comprehensive guide to IGV. Far more functionality exists than we have discussed here, which can be explored in more detail on their website and using the [IGV User Guide](https://software.broadinstitute.org/software/igv/UserGuide).
-
-### The IGV user interface (UI) and basic navigation
-
-The layout of the IGV desktop application is relatively simple and easy to use after you familiarize yourself with the layout of the user interface.
-
-Some of the main UI features include:
-* **Currently loaded genome** - Shown in top left. Drop down menu allows you to toggle between pre-packaged genomes or access those available from the IGV server. Genomes can also be loaded using the `File` tab.
-
-* **Current chromosome/contig** - Name of the chromosome, contig, or other sequence type currently being shown. Can be changed using drop down menu.  
-
-* **Current region of chromosome/contig** - Coordinates in the form *chr:start-end* can be copied and pasted here directly to navigate to a region. Gene names can also be used (dependent upon the loaded annotation).
-
-* **Zoom bar** - Zoom in and out of the currently shown region
-
-* **Schematic of currently loaded chromosome or contig** - A red box indicates location of the region you are currently viewing. Full width of current region is shown below, with a scale bar indicating specific coordinates. Both can be used to navigate directly.
-
-* **Gene track** - Shows gene included in currently loaded annotation (Refseq genes in example). Right click track for additional formatting options. Features included in annotation are indicated by thickness (introns, exons, UTRs). Gene orientation is shown with arrows pointing right for FWD/+, left for REV/- strand.
-
-
-![](../figures/igv-01.png)
-
-
-IGV allows you to customize how tracks are presented, and can be modified using `Preferences` found under the `View`tab. Tweaking preference can be useful in a number of ways:
-
-Modifying the window size that IGV will start to load reads at
-Changing the types of reads that are masked from viewing (e.g. supplemental reads)
-Allowing soft-clipped bases to be shown
-
-![](../figures/IGV_preferences.png)
-
-
-
-### Working with BAM files (alignments) in IGV
-
-BAM files can be loaded using the `File` tab and selecting `Load from file`. We will use an example BAM file that contains a small number of alignments on chromosome 20 (to reduce file size) of *hg19*, generated from low pass whole-genome sequencing of an individual in the [*1000 Genomes Project*](https://www.internationalgenome.org/home)
-
-Load this file in now (located in your github repo directory `Day-2/data/HG00099.chrom20-sub.low_coverage.bam`.)
-
-**Important note:** The **index file** (ending in .bai) needs to be in the same directory as the BAM file for IGV to load it. BAM files are typically very big and the index creates an efficient index, like you would find in the back of a book, that helps us navigate through the file quickly. We created an index file earlier in the lesson with the `samtools index` command.
-
-![](../figures/igv-02.png)
-
-You can see a large number of reads shown in red and blue. Reads aligning to the FWD strand of the reference are shown in red. Reads aligning to the reverse strand are shown in blue.
-
-A read coverage bar is automatically show above the alignments. The coverage track is a histogram that shows the number of reads covering each base in the visible region.
-
-Zoom in closer to view the *MYLK2* gene.
-
-![](../figures/igv-03.png)
-
-Now we have zoomed in closer, we can see more detail about the reads (e.g. direction indicated by their arrowhead) and the gene features they cover. Since this is WGS data, it makes sense for alignments to cover exons, introns, UTRs, and intergenic regions. Remember the distribution of the data is determined by the experiment.
-
-To gain more information on specific reads, hover over a single read. Some of this information may look familiar based on our discussions of the BAM file format.
-
-![](../figures/igv-04.png)
-
-You can also see some features on specific reads are highlighted. IGV uses colors within reads to highlight features of individual bases. For example, IGV will highlight bases that are mismatched compared the reference. Such bases could represent genetic variants.
-
-![](../figures/igv-05.png)
-
-If you right click in the alignment track, you will see a number of options appear for changing how the alignments are displayed. One useful option is `View reads as pairs`. Provided your data are paired-end, R1 and R2 reads will be connected by a thin gray line, representing a region that exists in the genome, but was not captured by either end of the paired end sequencing, either because the fragment length was larger than the read lengths or because the read spans and intron or long deletion.
-
-Another useful alignment viewing option available from this menu is changing how reads are colored. By default, read are colored according to the strand they are aligned to, which is useful in several contexts, for example, when working with stranded RNA-seq data, however other coloring schemes can be selected, e.g.
-- by read group
-- by library
-
-![](../figures/igv-06.png)
-
-Insertions and deletions are also highlighted using a purple I (for insertions) or a horizontal black line (for deletions).
-
-![](../figures/igv-07.png)
-
-You can start to appreciate how IGV helps identify features of our data, e.g. potential variants. This information could help to inform subsequent analyses. 
-
-> **Note:** This lesson is only designed to serve as an introduction to IGV. The complete functionality is described on in the [IGV User Guide](https://software.broadinstitute.org/software/igv/UserGuide). I encourage you to visit and explore the user guide after completing this tutorial.
-
-If you use IGV in your publications, you should at cite at least the original publication [(found here)](https://www.nature.com/articles/nbt.1754).
-
-Other genome browsers do exist and have various strengths/weaknesses. For example, the [*UCSC Genome Broswer*](https://genome.ucsc.edu/), is an excellent web-based tool that allows you to perform many of the same visualizations that you would using IGV using your own data, and also provides access to a large collection of hosted datasets. The major advantage of IGV is the ease and speed with which it allows you to explore your own data, which can be slower to explore using a web-based tool.
-
 ## Break out room exercises
 -----
 
@@ -524,20 +397,17 @@ Other genome browsers do exist and have various strengths/weaknesses. For exampl
 
 - What is the best way to store the aligned file to minimize the space constraints?
 
-- Look at one of your alignments in the IGV, make sure to load the correct version of the genome for this annotation (hg38). Remember these data only have reads mapped to chromosome 20.
-
-- What happens if you load the older version of the human genome (hg19)? Does the distribution of the data make sense? Why?
-
 -----
 
 If you got lost, or didn't have enough time to finish the commands before we move to the next session, you can copy the files needed for the next step with the following command.
 
 ```bash
 # go to your scratch directory (e.g. $FOB)
+
 #make a directory to store aligned files
-mkdir -p $FOB/aligned
+mkdir -p $FOB/align
 
 # copy files
-cp $SOURCE/aligned/* $FOB/aligned/
+cp $RESOURCE/align/* $FOB/align/
 ```
 
