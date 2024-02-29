@@ -2,7 +2,7 @@
 # Working with NGS data part IV
 
 ## Introduction
-Instead of sequencing all available DNA or RNA, we sometimes intentionally isolate specific subsets of DNA/RNA for sequencing analysis. For example, ChIP-seq is used to *'pull-down'* the DNA associated with a specific DNA binding protein, allowing us to idnetify transcription factor binding sites, for example. Alternatively, ATAC-seq is used to isolate only the accessible regions of DNA, enabling us to identify the landscape of functionally active genomic regions in a sample. 
+Instead of sequencing all available DNA or RNA, we sometimes intentionally isolate specific subsets of DNA/RNA for sequencing analysis. For example, ChIP-seq is used to *'pull-down'* the DNA associated with a specific DNA binding protein, allowing us to identify transcription factor binding sites, for example. Alternatively, ATAC-seq is used to isolate only the accessible regions of DNA, enabling us to identify the landscape of functionally active genomic regions in a sample. 
 
 Such methods also generate read alignments, however using these for **read quantification** or **variant calling** won't tell us which regions of the genome were isolated in the experiment. Instead, we perform an analytical procedure called **peak calling**, where we systematically scan the genome to agnostically identify regions containing read *pile-ups* that we call **peaks**. These peaks represent the regions of DNA/RNA isolated in the experiment. 
 
