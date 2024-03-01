@@ -445,7 +445,10 @@ Once variant calling is performed and a confident set of variants is determined 
 
 ### Breakout Room activities
 ---
+- Look at one of your alignments in the IGV, make sure to load the correct version of the genome for this annotation (hg38). Remember these data only have reads mapped to chromosome 20.
 
+- What happens if you load the older version of the human genome (hg19)? Does the distribution of the data make sense? Why?
+  
 - Build a code loop for running variant calling on all 4 samples using the following framework
 
 ```bash
@@ -467,3 +470,5 @@ ls $FOB/align/*.Aligned.sortedByCoord.out.bam | while read x; do
 done
 ```
 - Take a look at the VCF file for DEX treated sample SRR1039509. Are there more SNPs than in sample SRR1039508 (untreated)? Would you expect there to be?
+
+
