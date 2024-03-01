@@ -36,7 +36,7 @@ cp $RESOURCE/align/* $FOB/align/
 After generating read alignments to your genome of interest, there are several downstream analysis tasks that can be performed to represent the final reduced representation of the dataset. How we use the read alignments to generate the reduced representation of the dataset is dependent on the hypothesis we are testing. Two very common tasks that are performed on alignments are *read quantification* and *variant calling*.
 
 **Visually inspecting alignments:**
-- It is good practice to take a look at your alignments before moving onto further analysis steps, you may be able ti identify issues with read mapping before you get confusing results with downstream analysis. For example maybe you indicated your data was stranded but it is not, this would be easy to see when visualizing alignments.
+- It is good practice to take a look at your alignments before moving onto further analysis steps, you may be able to identify issues with read mapping before you get confusing results with downstream analysis. For example maybe you indicated your data was stranded but it is not, this would be easily caught when visualizing alignments.
 
 **Read quantification:**
 - Often referred to as read counting, several NGS applications require us to count reads overlapping specific features to extract insights. For example, in RNA-seq, the number of reads overlapping each gene is used to infer expression level.
@@ -162,12 +162,6 @@ If you use IGV in your publications, you should at cite at least the original pu
 Other genome browsers do exist and have various strengths/weaknesses. For example, the [*UCSC Genome Broswer*](https://genome.ucsc.edu/), is an excellent web-based tool that allows you to perform many of the same visualizations that you would using IGV using your own data, and also provides access to a large collection of hosted datasets. The major advantage of IGV is the ease and speed with which it allows you to explore your own data, which can be slower to explore using a web-based tool.
 
 
-## Break out room exercises
------
-- Look at one of your alignments in the IGV, make sure to load the correct version of the genome for this annotation (hg38). Remember these data only have reads mapped to chromosome 20.
-
-- What happens if you load the older version of the human genome (hg19)? Does the distribution of the data make sense? Why?
-
 ---
 ## Part 2: Read count quantification
 
@@ -282,7 +276,7 @@ TMM (edgeR)| Trimmed mean of M-values| Depth & library composition | Between sam
 
 ---
 
-## Part 2: Variant calling
+## Part 3: Variant calling
 
 Following an experiment such as Whole Genome Sequencing (WGS) or Exome Sequencing (WES) and subsequent read alignment, a common next step is variant calling. **Genomic variants** are locations in the sequenced samples where the sequenced reads differ from the reference genome to which they have been aligned.  
 
@@ -328,6 +322,30 @@ freebayes \
 -v $FOB/vars/SRR1039508.vcf \
 -b $FOB/align/SRR1039508.Aligned.sortedByCoord.out.bam
 ```
+
+This command will fail with an error indicating `terminate called after throwing an instance of 'std::out_of_range'`. This is a known issue related to splice junctions in either the CIGAR string or the reference sequence (you can read about this error [here](https://github.com/freebayes/freebayes/issues/58)). This issue exists in `freebayes v0.9.20` but has been ammended in later releases of this software. Since we know the issue is rectified in later versions of this software one solution would be to update the version in our conda environment, however there are incompatibilities with the version of python as well as some python dependencies used by other software in this environment. This is an excellent demonstration of why multiple software environments are helpful. Let's exit our current conda environment and activate another one with the updated version of `freebayes v1.9.2`.
+
+```
+# check the version of freebayes available
+freebayes --version
+
+# exit current conda environment
+conda deactivate
+
+# activate new environment
+conda activate /dartfs/rc/nosnapshots/G/GMBSR_refs/envs/variant_calling
+
+# check the version of freebayes avaialbe
+freebayes --version
+
+# call variants on chromosome 20
+freebayes \
+-f $RESOURCE/refs/Homo_sapiens.GRCh38.dna.primary_assembly.chr20.fa \
+-r 20 \
+-v $FOB/vars/SRR1039508.vcf \
+-b $FOB/align/SRR1039508.Aligned.sortedByCoord.out.bam
+```
+
 The standard file format output by variant callers is `Variant Call Format`, or `VCF`, which is a tabular format containing the genomic location of each variant and the level of evidence for it in each sample, as well as a header describing the construction of the file.
 
 <p align="center">
