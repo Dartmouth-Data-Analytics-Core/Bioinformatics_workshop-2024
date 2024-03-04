@@ -165,6 +165,22 @@ BiocManager::install("BSgenome.Mmusculus.UCSC.mm10.masked")
 sessionInfo()
 ```
 
+
+When installing R packages using the code chunk above a lot of red text prints to the screen, most of the text are messages about the packages and dependencies being installed. However some of these messages could be errors indicating a package was not installed. It is good practice to read through these messages however a faster way to identify if all the software you need is installed is to run the following code. This code first creates a list of the packages you need called `pkg.list`, next we loop through the list (more on this on Day 2) to check if each package was successfully installed. If the package is NOT installed the name of the package will print to your screen and you can find the install command in the code chunk above and re-run that code chunk. 
+
+```
+pkg.list<-c("biomaRt","IRanges","GenomicRanges","Gviz","org.Hs.eg.db","EnsDb.Hsapiens.v86","GenomicFeatures","VariantAnnotation","TxDb.Hsapiens.UCSC.hg38.knownGene","TxDb.Mmusculus.UCSC.mm10.knownGene","BSgenome","ChIPseeker","BSgenome.Mmusculus.UCSC.mm10","BSgenome.Mmusculus.UCSC.mm10.masked")
+
+# loop to check which packages are NOT installed 
+for(i in 1:length(pkg.list)) {
+  if (!any(rownames(installed.packages()) == pkg.list[i])){
+    print (pkg.list[i])
+  }
+}
+# If a package name is printed to the screen you must install that package before continuing with the workshop. 
+```
+
+
 ## Downloading the data 
 ---
 
