@@ -15,9 +15,9 @@ We have designed the schedule so that breaks are essentially built into the brea
 
 - **12:00-12:30 - Intro to workshop.**
 - **12:30-1:30 - Intro. to bioinformatics (lecture, Dr. Owen Wilkins)**
-- **1:50-2:40 - The UNIX shell/Bash**
-- **2:50-3:30 - Installing and managing software**
-- **4:00-5:00 - Intro. to next-generation sequencing (lecture, Dr. Fred Kolling)**  
+- **1:45-2:30 - The UNIX shell/Bash**
+- **2:45-3:30 - Installing and managing software**
+- **3:45-4:45 - Intro. to next-generation sequencing (lecture, Dr. Fred Kolling)**  
 
 ---
 
@@ -25,18 +25,18 @@ We have designed the schedule so that breaks are essentially built into the brea
 
 - **12:00-12:10 - Day 1 recap & questions**
 - **12:10-1:10 - Intro. to NGS data analysis-I (FASTQ files)**  
-- **1:25-2:45 - Intro. to NGS data analysis-II (BAM/SAM files)**
-- **3:00-3:45 - Intro. to NGS data analysis-III (counts/VCF files)**  
+- **1:25-2:25 - Intro. to NGS data analysis-II (BAM/SAM files)**
+- **2:40-3:40 - Intro. to NGS data analysis-III (IGV + counts/VCF files)**  
 - **4:00-5:00 - Intro. to NGS data analysis-IV (Bed/WIG files)**
 
-- **Homework - Basics of R programming, optional lesson review Thursday December 8, 2-3PM**
 ---
 
 ## Day3
 
 - **12:00-12:10 - Day 2 recap & questions**
-- **12:10-1:10 - Genomics with R & Bioconductor I** (working with genomic regions)
-- **1:25-2:25 - Genomics with R & Bioconductor II** (genome annotation)
-- **2:40-3:30 - Introduction to statistical inference for bioinformatics I**
-- **3:40-4:50 - Introduction to statistical inference for bioinformatics II**
-- **4:50-5:00 - Wrap-up & closing remarks**
+- **12:10-1:00 - Basics of R programming**
+- **1:10-2:00 - Genomics with R & Bioconductor I** (working with genomic regions)
+- **2:10-3:00 - Genomics with R & Bioconductor II** (genome annotation)
+- **3:10-3:50 - Introduction to statistical inference for bioinformatics I**
+- **3:50-4:30 - Introduction to statistical inference for bioinformatics II**
+- **4:30-5:00 - Wrap-up, closing remarks, & questions**
