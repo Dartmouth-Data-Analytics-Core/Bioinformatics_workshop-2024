@@ -37,13 +37,15 @@ A common statistical test to compare the means between two groups of normally di
   <img src="../figures/t-stat.png" height="90%" width="90%"/>
 </p>
 
-If the difference between the means of each sample group is large, and the standard deviation (spread of the data) is low, the t-statistic will have a larger value. If the means are closer together, or the standard deviation is large, the t-statistic will be small. In the below example, you can see the difference between the means seems quite large, and the spread of each distribution does not seem excessive, suggesting we might expect a large t-statistic for these data. 
+If the difference between the means of each sample group is large, and the standard deviation (spread of the data) is low, the t-statistic will have a larger value. If the means are closer together, or the standard deviation is large, the t-statistic will be small. 
+
+In the below example, you can see the difference between the means seems quite large, and the spread of each distribution does not seem excessive, suggesting we might expect a large t-statistic for these data. 
 	
 <p align="center">
   <img src="../figures/dist-example.png" height="90%" width="90%"/>
 </p>	
 	
-In order to determine if our test-statistic suggests there is a signifiant difference between the two means, we compare our test-statistic to a distribution that would be generated if we repeadtedly ran this procedure on samples with no significant difference (i.e. the null hypothesis is true). In the case of the t-statistic, this distribution is referred to as the **t-distribution**. 
+To determine if our test-statistic suggests there is a signifiant difference between the two means, we compare our test-statistic to a distribution that would be generated if we repeadtedly ran this procedure on samples with no significant difference (i.e. the null hypothesis is true). In the case of the t-statistic, this distribution is referred to as the **t-distribution**. 
 	
 <p align="center">
   <img src="../figures/t-dist.png" height="70%" width="70%"/>
