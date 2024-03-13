@@ -21,7 +21,7 @@ In this lesson, we will introduce the major ways bioinformatics packages can be 
 
 ## What is software 
 ----
-Before we discuss how to access software, it is important to understand the basics of compute resources. This may seem pedantic to some of you, but we want to make sure everyone is starting with the same background. The hardware of a system is the available memory and processing power of a compute resource. Software are a set of instructions, writing in a coding language, for manipulating data using the available hardware. Software can further be categorized into system software, which interfaces directly with the hardware of the compute system, an example of this would be your operating system and application software, which interfaces with the system software to leverage the hardware compute resources. All of the commands and software we will discuss in this workshop fall into the application category.
+Before we discuss how to access software, it is important to understand the basics of compute resources. This may seem pedantic to some of you, but we want to make sure everyone is starting with the same background. The hardware of a system is the available memory and processing power of a compute resource. Software are a set of instructions, written in a coding language, for manipulating data using the available hardware. Software can further be categorized into system software, which interfaces directly with the hardware of the compute system, an example of this would be your operating system and application software, which interfaces with the system software to leverage the hardware compute resources. All of the commands and software we will discuss in this workshop fall into the application category.
 
 <p align="center">
   <img src="../figures/softwareImage.png" height="35%" width="35%"/>
@@ -94,7 +94,7 @@ pwd
 ## Accessing software from executable files
 -------
 
-When we defined software earlier we discussed two major types of software, applications and system software. When most software is written it has been written with a specific systems software in mind (usually C or C++ for bioinformatics software), this is generally referred to as the source code. In order to ensure that a piece of software is accessible to many different users and systems programmers will sometimes *compile* the source code. **Compiling** source code involves translating the source coding language to a target coding language that can be leveraged by all (most) system software. Once the source code has been compiled it is considered **executable**.  
+When we defined software earlier we discussed two major types of software, applications and system software. The code written by programmers (usually C or C++ for bioinformatics software) is referred to as source code. In order to ensure that a piece of software is accessible to many different users and systems, programmers will *compile* the source code. **Compiling** source code involves translating the source coding language to a target operating system or server architecture. Once the source code has been compiled it is **executable**.  
 
 Some developers will pre-compile releases of their software for several operating systems and make them available for download. If a pre-compiled executable is available for the Linux system we are using (for Discovery, our OS is CentOS 7), this can be a painless way to install software. It only requires downloading the executable file to a directory and running it.  For example, the following code uses the `wget` command to download a binary, precompiled for Linux, of the bowtie2 aligner.
 
@@ -206,6 +206,7 @@ cat /dartfs/rc/nosnapshots/G/GMBSR_refs/fobwrkshp/environment.yml
 You can see we have specified a name for the environment, and the channel to use for the downloads in the `environment.yml` file rather than using the `-c` and `-n` flags. The number of packages being installed should indicate why conda environments are so useful, imagine having to load all of these packages individually it is much easier to load them with a single command in a conda environment. The command below is how you could use this file to build a conda environment located in the directory you just created (`.conda/envs`). This command takes a while to execute so in the interest of time we have created this environment for you.
 
 ```bash
+### Do not run this command.  We have already created the environment in an accessible location. ###
 conda env create -f /dartfs/rc/nosnapshots/G/GMBSR_refs/fobwrkshp/environment.yml
 ```
 
