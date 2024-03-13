@@ -115,12 +115,12 @@ The commands that you just executed locally in your terminal window work the sam
 # Check your location on the cluster
 pwd
 ```
-You should see something like `/dartfs-hpc/rc/home/h/netID` displayed in response to your command. Initially when you log on you will always be directed to your home directory (the address or path listed above). Your home directory by default will have 50GB of storage space to begin with, if you are running something that requires more storage space it is possible to extend that limit temporarily with the `/dartfs-hpc/scratch/ drive`. This is where we have stored all of the files you will be working with today. Directories and files hosted on the `/dartfs-hpc/scratch/` drive will only be kept for 45 days, you will receive a notification from Research Computing before the data is deleted.
+You should see something like `/dartfs-hpc/rc/home/h/netID` displayed in response to your command. Initially when you log on you will always be directed to your home directory (the address or path listed above). Your home directory by default will have 50GB of storage space to begin with, if you are running something that requires more storage space it is possible to extend that limit temporarily with the `/dartfs-hpc/scratch/` drive. This is where we will store all of the files you will be working with today. Directories and files hosted on the `/dartfs-hpc/scratch/` drive will only be kept for 45 days, you will receive a notification from Research Computing before the data is deleted.
 
 
 ## Start a new directory
 
-Let's start by making a folder, or directory, to store all of the work you do today. It's often a useful practice to give directories informative names, for example `230601_YOURINITIALS_rnawrkshp`, (ex. Owen's `230601_omw_rnawrkshp`, Shannon's `230601_sms_rnawrkshp`, Tim's `230601_sullivan_rnawrkshp`). At a glance I could tell that this directory contains data from June 01, 2023 pertaining to an RNAseq workshop. Notice I chose a title with no spaces. The 'space' is a *special character* in UNIX, and special characters need to be *escaped* with the `\` and so `230601_abc_workshp` would look like `230601\ abc\ workshp` with escape characters.
+Let's start by making a folder, or directory, to store all of the work you do today. It's often a useful practice to give directories informative names, for example `240313_YOURINITIALS_fob`, (ex. Owen's `240313_omw_fob`, Shannon's `240313_sms_fob`, Tim's `240313_sullivan_fob`). At a glance I could tell that this directory contains data from March 13, 2024 pertaining to an RNAseq workshop. Notice I chose a title with no spaces. The 'space' is a *special character* in UNIX, and special characters need to be *escaped* with the `\` and so `240313_abc_fob` would look like `240313\ abc\ fob` with escape characters.
 
 File names with spaces become unwieldy to type out so most programmers will replace spaces with `_`, `.`, or `-` in their filenames to keep everything neat.
 
@@ -128,12 +128,12 @@ File names with spaces become unwieldy to type out so most programmers will repl
 # Navigate to scratch so you can make your own directory there
 cd /dartfs-hpc/scratch/
 
-# Make the directory.  Replace 'omw' with your own username.
-mkdir 240313_sms_workshp/
+# Make the directory.  Replace 'sms' with your own username.
+mkdir 240313_sms_fob/
 
 # Change to the newly-created directory.
-# replace omw with your initials
-cd 240313_sms_workshp
+# replace sms with your initials
+cd 240313_sms_fob
 
 # Check your location on the cluster
 pwd
@@ -161,6 +161,7 @@ This opens your `.bash_profile` where you can copy the following definitions and
 RESOURCE="/dartfs/rc/nosnapshots/G/GMBSR_refs/fobwrkshp/"
 
 # define the location where you will be working during the workshop
+# replace 'sms' with your own initials
 FOB="/dartfs-hpc/scratch/240313_sms_fob"
 ```
 
@@ -187,7 +188,7 @@ cp $RESOURCE/all_counts.txt $FOB
 
 ```
 
-The shell provides us with commands to view the contents of files in defined ways. The `cat` command for example (which stands for for concatenate) will print the entire contents of a file to the terminal. This can be useful for smaller files, but as you will see with larger files can quickly fill the terminal with more lines of data than it can display.
+The shell provides us with commands to view the contents of files in defined ways. The `cat` command for example (which stands for concatenate) will print the entire contents of a file to the terminal. This can be useful for smaller files, but as you will see with larger files can quickly fill the terminal with more lines of data than it can display.
 
 ```bash
 cat all_counts.txt
