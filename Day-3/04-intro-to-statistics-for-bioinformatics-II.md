@@ -97,8 +97,15 @@ Different types of errors made in hypothesis testing are classified based on the
   <img src="../figures/desicions-table.png" height="80%" width="80%"/>
 </p>
 
+<p align="center">
+  <img src="../figures/type1vstype2Error.jpeg" height="80%" width="80%"/>
+</p>
+
+
 - False positives are generally referred to as **Type I error**.
 - False-negatives are referred to as **Type II error**.
+
+
 
 We can demonstrate the multiple testing problem by simulating some very simple data that come from exactly the same distribution, and therefore should have no significant differences between them, so we should never reject the null in theory.
 
