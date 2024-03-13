@@ -166,7 +166,7 @@ sessionInfo()
 ```
 
 
-When installing R packages using the code chunk above a lot of red text prints to the screen, most of the text are messages about the packages and dependencies being installed. However some of these messages could be errors indicating a package was not installed. It is good practice to read through these messages however a faster way to identify if all the software you need is installed is to run the following code. This code first creates a list of the packages you need called `pkg.list`, next we loop through the list (more on this on Day 2) to check if each package was successfully installed. If the package is NOT installed the name of the package will print to your screen and you can find the install command in the code chunk above and re-run that code chunk. 
+When installing R packages using the code chunk above a lot of red text prints to the screen, most of the text are messages about the packages and dependencies being installed. However some of these messages could be errors indicating a package was not installed. It is good practice to read through these messages, however a faster way to identify if all the software you need is installed is to run the following code. This code first creates a list of the packages you need called `pkg.list`, next we loop through the list (more on this on Day 2) to check if each package was successfully installed. If the package is NOT installed the name of the package will print to your screen and you can find the install command in the code chunk above and re-run that code chunk. 
 
 ```
 pkg.list<-c("biomaRt","IRanges","GenomicRanges","Gviz","org.Hs.eg.db","EnsDb.Hsapiens.v86","GenomicFeatures","VariantAnnotation","TxDb.Hsapiens.UCSC.hg38.knownGene","TxDb.Mmusculus.UCSC.mm10.knownGene","BSgenome","ChIPseeker","BSgenome.Mmusculus.UCSC.mm10","BSgenome.Mmusculus.UCSC.mm10.masked")
@@ -189,14 +189,14 @@ The commands that you will be following can be found in markdown `(.md)` files w
 
 In your terminal window **on your local machine** navigate to where you want to download the files needed for this workshop. 
 
-**On Monday** before you log onto the first zoom session we will make the workshop materials public and you should download those to your local machine (preferably in the same location as you downloaded the setup materials) with the following command: 
+**On Wednesday** before you log onto the first zoom session we will make the workshop materials public and you should download those to your local machine (preferably in the same location as you downloaded the setup materials) with the following command: 
 
 ```bash
-git clone https://github.com/Dartmouth-Data-Analytics-Core/Bioinformatics_workshop-Dec-2022/
+git clone https://github.com/Dartmouth-Data-Analytics-Core/Bioinformatics_workshop-2024/
 ```
-If you run this command before Monday morning you may not download the most up to date lessons and your materials may not be identical to those that are presented in the workshop.
+If you run this command before Wednesday morning you may not download the most up to date lessons and your materials may not be identical to those that are presented in the workshop.
 
 ---
 
-If you have issues with any part of the installation and setup, please reach out to us directly DataAnalyticsCore@groups.dartmouth.edu, or attend optional bioinformatics help hours **Friday, December 2, 2021 12:30-1:30PM** the zoom link can be found in your welcome email. 
+If you have issues with any part of the installation and setup, please reach out to us directly DataAnalyticsCore@groups.dartmouth.edu.
 
