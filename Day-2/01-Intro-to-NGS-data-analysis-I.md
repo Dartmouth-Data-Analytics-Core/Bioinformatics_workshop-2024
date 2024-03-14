@@ -86,7 +86,7 @@ Raw sequence data was obtained from the [Sequence Read Archive (SRA)](https://ww
 ls -lah $RESOURCE/raw_subset_fastq/
 
 # lets have a look at the project directory containing the full raw FASTQs
-ls -lah $SOURCE/raw_full_fastq/
+ls -lah $RESOURCE/raw_full_fastq/
 ```
 
 Since these are paired-end reads each sample has a file for read 1 (SRRXXX_1) and a file for read 2 (SRRXXX_2). All of the files are `gzipped` in order to reduce the disk space they require, which is important as you can see that the full files are all **1GB** or more (you need a lot of space to process RNA-seq, or other-NGS data).
