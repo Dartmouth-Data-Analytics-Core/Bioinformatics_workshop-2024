@@ -53,7 +53,7 @@ Intuitively, this means that a base with a Phred score (Q-score) of `10` has a `
 
 However, the quality scores, 4th line, are clearly not probabilities in the FASTQ file. Instead, quality scores are encoded by a character that is associated with an *ASCII (American Standard Code for Information Interchange)* characters. ASCII codes provide a convenient way of representing a number with a character.
 
-In FASTQ files, Q-score is linked to a specific ASCII character by **adding 33 to the Phred-score**, and matching the resulting number with its ASCII character according to the standard code. This ensures quality scores only take up 1 byte per value, reducing the file size. The full table used for ASCII character to Q-score conversion is available [here](https://support.illumina.com/help/BaseSpace_OLH_009008/Content/Source/Informatics/BS/QualityScoreEncoding_swBS.htm).
+In FASTQ files, Q-score is linked to a specific ASCII character by **adding 33 to the Phred-score**, and matching the resulting number with its ASCII character according to the standard code. This ensures quality scores only take up 1 byte per value, reducing the file size. The full table used for ASCII character to Q-score conversion is available [here](https://help.basespace.illumina.com/files-used-by-basespace/quality-scores).
 
 Consider the first base call in our sequence example above, the `C` has a quality score encoded by an `H`, which corresponds to a Q-score of 39 (this information is in the linked table), meaning this is a good quality base call.
 
