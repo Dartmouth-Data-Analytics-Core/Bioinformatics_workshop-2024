@@ -353,19 +353,20 @@ Bioconductor includes a number of visualization-specific packages. One useful pa
 Lets use `Gviz` to create a simple visualization of a specific genomic region, so that we can compare the peak density for H3K27ac in forebrain and heart of the developing mouse.
 
 ```r
+library(Gviz)
 # create an annotation track from the Granges object for H3K27ac
-fr_h3k27ac_track <- AnnotationTrack(fr$h3K27ac, chromosome = "chr17", start = 9e6, end = 10e6,
-                                    name = "Forebrain - H3K27ac", stacking = "dense", col = "indianred")
+fr_h3k27ac_track <- AnnotationTrack(fr$h3K27ac, chromosome = "chr11", start = 98.2e6, end = 98.4e5,
+                                    name = "Forebrain - H3K27ac", stacking = "dense", col = "indianred", fill = "indianred")
 
 # do the same for heart H3K27ac - this takes ~ 1 minute
-hr_h3k27ac_track <- AnnotationTrack(ht$h3K27ac, chromosome = "chr17", start = 9e6, end = 10e6,
-                                    name = "Heart - H3K27ac", stacking = "dense", col = "cornflowerblue")
+hr_h3k27ac_track <- AnnotationTrack(ht$h3K27ac, chromosome = "chr11", start = 98.2e6, end = 98.4e5,
+                                    name = "Heart - H3K27ac", stacking = "dense", col = "cornflowerblue", fill = "cornflowerblue")
 
 # create a genomic axis object to add to plot
 gtrack <- GenomeAxisTrack()
 
 # plot the tracks for this region
-plotTracks(list(gtrack, fr_h3k27ac_track, hr_h3k27ac_track), from = 9e6, to = 10e6)
+plotTracks(list(gtrack, fr_h3k27ac_track, hr_h3k27ac_track), from = 98200000, to = 98500000)
 ```
 
 <p align="center">
