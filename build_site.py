@@ -310,6 +310,7 @@ def markdown_to_html(md_content, base_path='.'):
 def build_navigation(structure):
     """Build navigation HTML from book structure."""
     nav_items = []
+    top_level_items = []
     
     for item in structure:
         if isinstance(item, tuple) and len(item) == 2:
@@ -323,12 +324,16 @@ def build_navigation(structure):
                     nav_items.append(f'<li><a href="#{anchor}">{chapter_title}</a></li>')
                 nav_items.append('</ul>')
             else:
-                # It's a single chapter
+                # It's a single chapter - collect for top-level ul
                 chapter_file, chapter_title = item
                 anchor = normalize_anchor(chapter_file)
-                nav_items.append(f'<li><a href="#{anchor}">{chapter_title}</a></li>')
+                top_level_items.append(f'<li><a href="#{anchor}">{chapter_title}</a></li>')
     
-    return '\n'.join(nav_items)
+    # Wrap top-level items in ul if there are any
+    if top_level_items:
+        return '<ul>\n' + '\n'.join(top_level_items) + '\n</ul>\n' + '\n'.join(nav_items)
+    else:
+        return '\n'.join(nav_items)
 
 def build_content(structure, base_path='.'):
     """Build main content HTML from book structure."""
