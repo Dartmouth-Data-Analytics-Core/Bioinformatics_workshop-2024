@@ -52,7 +52,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fundamentals of Bioinformatics Workshop</title>
+    <title>RNA-seq Differential Expression Analysis Workshop</title>
     <style>
         * {{
             margin: 0;
@@ -240,7 +240,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 <body>
     <div class="container">
         <nav class="sidebar">
-            <h1>Bioinformatics Workshop</h1>
+            <h1>RNA-seq DE Workshop</h1>
             {nav}
         </nav>
         <main class="content">
@@ -258,16 +258,6 @@ def extract_frontmatter(content):
         if len(parts) >= 3:
             return parts[1], parts[2]
     return None, content
-
-def normalize_anchor(filename):
-    """Normalize filename to create consistent anchor."""
-    anchor = filename.replace('/', '-').replace('.md', '').replace('&', '-').replace(' ', '-')
-    # Replace multiple dashes with single dash
-    while '--' in anchor:
-        anchor = anchor.replace('--', '-')
-    # Remove leading/trailing dashes
-    anchor = anchor.strip('-')
-    return anchor
 
 def markdown_to_html(md_content, base_path='.'):
     """Convert markdown to HTML, handling images and links."""
@@ -307,10 +297,19 @@ def markdown_to_html(md_content, base_path='.'):
     
     return html
 
+def normalize_anchor(filename):
+    """Normalize filename to create consistent anchor."""
+    anchor = filename.replace('/', '-').replace('.md', '').replace('&', '-').replace(' ', '-')
+    # Replace multiple dashes with single dash
+    while '--' in anchor:
+        anchor = anchor.replace('--', '-')
+    # Remove leading/trailing dashes
+    anchor = anchor.strip('-')
+    return anchor
+
 def build_navigation(structure):
     """Build navigation HTML from book structure."""
     nav_items = []
-    top_level_items = []
     
     for item in structure:
         if isinstance(item, tuple) and len(item) == 2:
@@ -324,16 +323,12 @@ def build_navigation(structure):
                     nav_items.append(f'<li><a href="#{anchor}">{chapter_title}</a></li>')
                 nav_items.append('</ul>')
             else:
-                # It's a single chapter - collect for top-level ul
+                # It's a single chapter
                 chapter_file, chapter_title = item
                 anchor = normalize_anchor(chapter_file)
-                top_level_items.append(f'<li><a href="#{anchor}">{chapter_title}</a></li>')
+                nav_items.append(f'<li><a href="#{anchor}">{chapter_title}</a></li>')
     
-    # Wrap top-level items in ul if there are any
-    if top_level_items:
-        return '<ul>\n' + '\n'.join(top_level_items) + '\n</ul>\n' + '\n'.join(nav_items)
-    else:
-        return '\n'.join(nav_items)
+    return '\n'.join(nav_items)
 
 def build_content(structure, base_path='.'):
     """Build main content HTML from book structure."""
@@ -388,14 +383,10 @@ def main():
     # Generate HTML
     html = HTML_TEMPLATE.format(nav=nav, content=content)
     
-    # Write index.html with explicit UTF-8 BOM to ensure proper encoding
+    # Write index.html
     output_path = os.path.join(SITE_DIR, 'index.html')
-    with open(output_path, 'w', encoding='utf-8', newline='') as f:
-        # Ensure the HTML is properly formatted
+    with open(output_path, 'w', encoding='utf-8') as f:
         f.write(html)
-    # Verify the file was written correctly
-    if not os.path.exists(output_path):
-        raise Exception(f"Failed to create {output_path}")
     
     # Copy figures directory if it exists
     figures_src = os.path.join(CONTENT_DIR, 'figures')

@@ -38,13 +38,6 @@ jobs:
         run: |
           python3 build_site.py
       
-      - name: Verify build
-        run: |
-          ls -la docs/
-          test -f docs/index.html && echo "✓ index.html exists" || echo "✗ index.html missing"
-          test -f docs/.nojekyll && echo "✓ .nojekyll exists" || echo "✗ .nojekyll missing"
-          test -d docs/figures && echo "✓ figures directory exists" || echo "✗ figures directory missing"
-      
       - name: Setup Pages
         uses: actions/configure-pages@v4
       
@@ -63,4 +56,5 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
 
