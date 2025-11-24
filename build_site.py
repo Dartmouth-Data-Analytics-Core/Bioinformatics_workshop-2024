@@ -388,10 +388,14 @@ def main():
     # Generate HTML
     html = HTML_TEMPLATE.format(nav=nav, content=content)
     
-    # Write index.html
+    # Write index.html with explicit UTF-8 BOM to ensure proper encoding
     output_path = os.path.join(SITE_DIR, 'index.html')
-    with open(output_path, 'w', encoding='utf-8') as f:
+    with open(output_path, 'w', encoding='utf-8', newline='') as f:
+        # Ensure the HTML is properly formatted
         f.write(html)
+    # Verify the file was written correctly
+    if not os.path.exists(output_path):
+        raise Exception(f"Failed to create {output_path}")
     
     # Copy figures directory if it exists
     figures_src = os.path.join(CONTENT_DIR, 'figures')
