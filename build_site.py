@@ -19,7 +19,6 @@ BOOK_STRUCTURE = [
     ("index.md", "Introduction"),
     ("welcome-&-setup.md", "Welcome and Setup"),
     ("schedule.md", "Schedule"),
-    ("cheat-sheets.md", "Cheat Sheets"),
     ("Day 1", [
         ("Day-1/01-shell-basics.md", "Shell Basics"),
         ("Day-1/02-installing-&-managing-software.md", "Installing & Managing Software"),
